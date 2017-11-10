@@ -13,8 +13,6 @@ var _pMap2 = _interopRequireDefault(_pMap);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 /**
  * ContentService class for the CRUD operations.
  * @type {ContentService}
@@ -177,21 +175,13 @@ class ContentService {
    * @returns {Promise<Array<Model>, Error>} - The inserted content.
    */
   createMany(arr) {
-    var _this = this;
-
-    return (0, _pMap2.default)(arr, (() => {
-      var _ref = _asyncToGenerator(function* (obj) {
-        const found = yield _this.Model.findOne({
-          _id: obj.slug
-        });
-
-        return found ? _this.updateContent(obj.slug, obj) : _this.createContent(obj);
+    return (0, _pMap2.default)(arr, async obj => {
+      const found = await this.Model.findOne({
+        _id: obj.slug
       });
 
-      return function (_x) {
-        return _ref.apply(this, arguments);
-      };
-    })(), {
+      return found ? this.updateContent(obj.slug, obj) : this.createContent(obj);
+    }, {
       concurrency: 1
     });
   }
