@@ -8,7 +8,8 @@
 **Warning:** this project is still unstable and there is no documentation for
 it. Use it at your own risk.
 
-## Featuress
+## Features
+
 The pop-api project aims to provide the core modules for the [`popcorn-api`](https://github.com/popcorn-official/popcorn-api)
 project, but can also be used for other purposes by using middleware.
  - Configurable middleware for:
