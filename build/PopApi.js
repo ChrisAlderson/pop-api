@@ -90,20 +90,19 @@ class PopApi {
         name,
         version
       });
-      PopApi.use(_middleware.Logger, _extends({
+
+      const loggerOpts = _extends({
         name,
         logDir,
-        type: 'winston',
         pretty,
         quiet
-      }, PopApi.loggerArgs));
+      }, PopApi.loggerArgs);
       PopApi.use(_middleware.Logger, _extends({
-        name,
-        logDir,
-        type: 'express',
-        pretty,
-        quiet
-      }, PopApi.loggerArgs));
+        type: 'winston'
+      }, loggerOpts));
+      PopApi.use(_middleware.Logger, _extends({
+        type: 'express'
+      }, loggerOpts));
       PopApi.use(_middleware.Database, {
         database: name,
         hosts,

@@ -60,6 +60,21 @@ class BaseContentController extends _IContentController2.default {
   }
 
   /**
+   * Check if the content is empty or the length of the content array is zero.
+   * @param {!Object} res - The ExpressJS response objec.t
+   * @param {!Object|Array<Object>} content - The content to check.
+   * @returns {Object} - Returns a 204 response if the content is empty, or a
+   * 200 response with the content if it is not empty.
+   */
+  _checkEmptyContent(res, content) {
+    if (!content || content.length === 0) {
+      return res.status(204).json();
+    }
+
+    return res.json(content);
+  }
+
+  /**
    * Get all the available pages.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
@@ -67,13 +82,7 @@ class BaseContentController extends _IContentController2.default {
    * available.
    */
   getContents(req, res) {
-    return this._service.getContents().then(content => {
-      if (content.length === 0) {
-        return res.status(204).json();
-      }
-
-      return res.json(content);
-    }).catch(err => res.status(500).json(err));
+    return this._service.getContents().then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
   }
 
   /**
@@ -101,13 +110,7 @@ class BaseContentController extends _IContentController2.default {
     const o = parseInt(order, 10) ? parseInt(order, 10) : -1;
     const s = typeof sort === 'string' ? this.sortContent(sort, o) : null;
 
-    return this._service.getPage(s, Number(page)).then(content => {
-      if (content.length === 0) {
-        return res.status(204).json();
-      }
-
-      return res.json(content);
-    }).catch(err => res.status(500).json(err));
+    return this._service.getPage(s, Number(page)).then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
   }
 
   /**
@@ -117,13 +120,7 @@ class BaseContentController extends _IContentController2.default {
    * @returns {Promise<Object, Object>} - The details of a single content item.
    */
   getContent(req, res) {
-    return this._service.getContent(req.params.id).then(content => {
-      if (!content) {
-        return res.status(204).json();
-      }
-
-      return res.json(content);
-    }).catch(err => res.status(500).json(err));
+    return this._service.getContent(req.params.id).then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
   }
 
   /**
@@ -163,13 +160,7 @@ class BaseContentController extends _IContentController2.default {
    * @returns {Promise<Object, Object>} - A random item.
    */
   getRandomContent(req, res) {
-    return this._service.getRandomContent().then(content => {
-      if (!content) {
-        return res.status(204).json();
-      }
-
-      return res.json(content);
-    }).catch(err => res.status(500).json(err));
+    return this._service.getRandomContent().then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
   }
 
 }
