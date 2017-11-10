@@ -40,13 +40,8 @@ jobs:
     - npm run lint
     - npm run flow
   - stage: test
-    node_js: '6'
-    script: npm run test
-    after_success: npm run coveralls
-  - stage: test
     node_js: '7'
     script: npm run test
-    after_success: npm run coveralls
   - stage: test
     node_js: '8'
     script: npm run test
@@ -54,7 +49,6 @@ jobs:
   - stage: test
     node_js: '9'
     script: npm run test
-    after_success: npm run coveralls
   - stage: build
     node_js: '9'
     script: npm run build
