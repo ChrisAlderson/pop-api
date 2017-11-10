@@ -1,0 +1,90 @@
+{
+  "name": "pop-api",
+  "version": "0.1.0",
+  "description": "The base modules for popcorn-api",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "commander": "^2.11.0",
+    "compression": "^1.7.1",
+    "del": "^3.0.0",
+    "express": "^4.16.2",
+    "express-winston": "^2.4.0",
+    "mkdirp": "^0.5.1",
+    "mongoose": "^4.13.1",
+    "p-map": "^1.2.0",
+    "response-time": "^2.3.2",
+    "rimraf": "^2.6.2",
+    "sprintf-js": "^1.1.1",
+    "winston": "^3.0.0-rc1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-istanbul": "^4.1.5",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-strict-mode": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "cheerio": "^1.0.0-rc.2",
+    "coveralls": "^3.0.0",
+    "cross-env": "^5.1.1",
+    "esdoc": "^1.0.3",
+    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-flow-type-plugin": "^1.0.1",
+    "esdoc-standard-plugin": "^1.0.0",
+    "eslint": "^4.10.0",
+    "eslint-config-vixo": "^2.0.0",
+    "flow": "^0.2.3",
+    "flow-bin": "^0.59.0",
+    "flow-typed": "^2.2.3",
+    "husky": "^0.14.3",
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
+    "sinon": "^4.1.2"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "./node_modules/.bin/babel src --out-dir build",
+    "coveralls": "cat ./coverage/lcov.info | node ./node_modules/.bin/coveralls",
+    "docs": "./node_modules/.bin/esdoc -c .esdoc.json",
+    "flow": "./node_modules/.bin/flow",
+    "lint": "./node_modules/.bin/eslint {example,src,test}/** *.js$",
+    "precommit": "npm run lint && npm run flow",
+    "prepack": "npm run build",
+    "prepush": "npm run test && npm run build",
+    "test": "./node_modules/.bin/cross-env NODE_ENV=test ./node_modules/.bin/nyc --reporter=lcov --reporter=text ./node_modules/.bin/mocha --recursive --exit --reporter spec test/**"
+  },
+  "engines": {
+    "node": ">=6.10.0"
+  },
+  "keywords": [
+    "api",
+    "popcorn",
+    "middleware"
+  ],
+  "main": "./build/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/popcorn-official/pop-api.git"
+  },
+  "eslintConfig": {
+    "extends": "vixo",
+    "globals": {
+      "logger": true
+    }
+  },
+  "nyc": {
+    "require": [
+      "babel-register"
+    ],
+    "include": [
+      "src"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  }
+}

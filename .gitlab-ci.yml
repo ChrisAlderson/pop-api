@@ -1,0 +1,76 @@
+image: node:latest
+
+cache:
+  paths:
+   - node_modules/
+
+variables:
+  MONGO_URI: 'mongo'
+
+stages:
+  - test
+  - codequality
+  - docs
+  - release
+  - clean
+
+test:
+  stage: test
+  services:
+    - mongo
+  before_script:
+    - mongodump
+    - npm i -g flow-typed
+    - npm i
+    - flow-typed install
+  script:
+    - npm run lint
+    - npm run flow
+    - npm test
+    - npm run coverage
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_PIPELINE_ID"
+    paths: [coverage/lcov-report]
+
+codeclimate:
+  stage: codequality
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+  services:
+    - docker:dind
+  script:
+    - docker pull codeclimate/codeclimate
+    - docker run --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate validate-config
+    - docker run --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f json > codeclimate.json
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_PIPELINE_ID"
+    paths: [codeclimate.json]
+
+docs:
+  stage: docs
+  script:
+    - npm run docs
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_PIPELINE_ID"
+    paths:
+      - docs
+
+release:
+  stage: release
+  script:
+    - npm run build
+    - npm pack
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_PIPELINE_ID"
+    paths:
+      - $CI_PROJECT_NAME-*.tgz
+  only:
+    - tags
+
+clean:
+  stage: clean
+  script:
+    - rm -rf build coverage docs flow-typed/npm node_modules tmp
+    - rm -rf ~/.node-gyp
+  when: on_failure
