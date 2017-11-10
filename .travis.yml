@@ -58,7 +58,7 @@ jobs:
   - stage: build
     node_js: '9'
     script: npm run build
-  - stage: pages
+  - stage: docs
     node_js: '9'
     script: npm run docs
 
