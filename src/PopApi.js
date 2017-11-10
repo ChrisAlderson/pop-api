@@ -91,21 +91,21 @@ export default class PopApi {
       name,
       version
     })
-    PopApi.use(Logger, {
+
+    const loggerOpts = {
       name,
       logDir,
-      type: 'winston',
       pretty,
       quiet,
       ...PopApi.loggerArgs
+    }
+    PopApi.use(Logger, {
+      type: 'winston',
+      ...loggerOpts
     })
     PopApi.use(Logger, {
-      name,
-      logDir,
       type: 'express',
-      pretty,
-      quiet,
-      ...PopApi.loggerArgs
+      ...loggerOpts
     })
     PopApi.use(Database, {
       database: name,

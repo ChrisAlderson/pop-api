@@ -100,18 +100,26 @@ export default class Logger {
    * @returns {string} - A color based on the log level.
    */
   _getLevelColor(level?: string): string {
+    let color = '\x1b[36m'
     switch (level) {
       case 'error':
-        return '\x1b[31m'
+        color = '\x1b[31m'
+        break
       case 'warn':
-        return '\x1b[33m'
+        color = '\x1b[33m'
+        break
       case 'info':
-        return '\x1b[36m'
+        color = '\x1b[36m'
+        break
       case 'debug':
-        return '\x1b[34m'
+        color = '\x1b[34m'
+        break
       default:
-        return '\x1b[36m'
+        color = '\x1b[36m'
+        break
     }
+
+    return color
   }
 
   /**

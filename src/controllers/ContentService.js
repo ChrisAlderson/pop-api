@@ -141,12 +141,6 @@ export default class ContentService {
       $limit: this.pageSize
     }]
 
-    if (sort) {
-      aggregateQuery = [{
-        $sort: sort
-      }, ...aggregateQuery]
-    }
-
     return this.Model.aggregate(aggregateQuery)
   }
 
