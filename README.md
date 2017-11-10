@@ -1,7 +1,7 @@
 # pop-api
 
-[![Build Status](https://travis-ci.org/ChrisAlderson/pop-api.svg?branch=master)](https://travis-ci.org/ChrisAlderson/pop-api)
-[![Coverage Status](https://coveralls.io/repos/github/ChrisAlderson/pop-api/badge.svg?branch=master)](https://coveralls.io/github/ChrisAlderson/pop-api?branch=master)
+[![Build Status](https://travis-ci.org/ChrisAlderson/pop-api.svg?branch=development)](https://travis-ci.org/ChrisAlderson/pop-api)
+[![Coverage Status](https://coveralls.io/repos/github/ChrisAlderson/pop-api/badge.svg?branch=development)](https://coveralls.io/github/ChrisAlderson/pop-api?branch=development)
 [![Dependency Status](https://david-dm.org/ChrisAlderson/pop-api.svg)](https://david-dm.org/ChrisAlderson/pop-api)
 [![devDependencies Status](https://david-dm.org/ChrisAlderson/pop-api/dev-status.svg)](https://david-dm.org/ChrisAlderson/pop-api?type=dev)
 
@@ -9,13 +9,13 @@
 it. Use it at your own risk.
 
 ## Featuress
-The pop-api project aims to provide the core modules for the [`popcorn-api`]()
+The pop-api project aims to provide the core modules for the [`popcorn-api`](https://github.com/popcorn-official/popcorn-api)
 project, but can also be used for other purposes by using middleware.
  - Configurable middleware for:
   - Command line interface
-  - MongoDB through [`mongoose`]()
+  - MongoDB through [`mongoose`](https://github.com/Automattic/mongoose)
   - Logging
-  - Routing with [`express`]()
+  - Routing with [`express`](https://github.com/expressjs/express)
   - Http Server
  - Router classes
  - Some default ways to handle routes for your content
