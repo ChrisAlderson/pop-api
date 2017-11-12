@@ -25,6 +25,37 @@ describe('PopApi', () => {
     expect(PopApi._installedPlugins).to.be.a('Map')
   })
 
+  /**
+   * Helper function to test the `use` method.
+   * @param {!string} msg - The message to print for the test.
+   * @returns {undefined}
+   */
+  function testUse(msg: string): void {
+    /** @test {PopApi.use} */
+    it(msg, () => {
+      PopApi.use(Routes, {
+        app: PopApi.app
+      })
+
+      expect(PopApi._installedPlugins).to.be.a('Map')
+      expect(PopApi._installedPlugins.size).to.equal(1)
+    })
+  }
+
+  // Execute the tests.
+  [
+    'should register a middleware plugin',
+    'should not register the same plugin twice'
+  ].map(testUse)
+
+  /** @test {PopApi.use} */
+  it('should not register the plugin if it is not a class', () => {
+    PopApi.use({})
+
+    expect(PopApi._installedPlugins).to.be.a('Map')
+    expect(PopApi._installedPlugins.size).to.equal(1)
+  })
+
   /** @test {PopApi.init} */
   it('should initiate the PopApi instance', done => {
     process.argv = ['', '', '-m', 'pretty']
@@ -52,38 +83,6 @@ describe('PopApi', () => {
 
       done()
     }).catch(done)
-  })
-
-  /**
-   * Helper function to test the `use` method.
-   * @param {!string} msg - The message to print for the test.
-   * @returns {undefined}
-   */
-  function testUse(msg: string): void {
-    /** @test {PopApi.use} */
-    it(msg, () => {
-      PopApi._installedPlugins = new Map()
-      PopApi.use(Routes, {
-        app: PopApi.app
-      })
-
-      expect(PopApi._installedPlugins).to.be.a('Map')
-      expect(PopApi._installedPlugins.size).to.equal(1)
-    })
-  }
-
-  // Execute the tests.
-  [
-    'should register a middleware plugin',
-    'should not register the same plugin twice'
-  ].map(testUse)
-
-  /** @test {PopApi.use} */
-  it('should not register the plugin if it is not a class', () => {
-    PopApi.use({})
-
-    expect(PopApi._installedPlugins).to.be.a('Map')
-    expect(PopApi._installedPlugins.size).to.equal(1)
   })
 
   /**
