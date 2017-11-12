@@ -16,7 +16,7 @@ import {
 } from '.'
 
 // Import the name and version from your package.json for the Cli and Database
-// middlewares.
+// middleware.
 import {
   name,
   version
@@ -40,7 +40,7 @@ const controllers = [{
 /**
  * `init` is a helper method to registers the built in middleware and
  * returns the PopApi instance. You can also register the individual
- * middlewares with more options.
+ * middleware with more options.
  * @returns {undefined}
  */
 async function setup() {

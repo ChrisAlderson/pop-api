@@ -59,7 +59,7 @@ export default class BaseContentController extends IContentController {
 
   /**
    * Check if the content is empty or the length of the content array is zero.
-   * @param {!Object} res - The ExpressJS response objec.t
+   * @param {!Object} res - The ExpressJS response object.
    * @param {!Object|Array<Object>} content - The content to check.
    * @returns {Object} - Returns a 204 response if the content is empty, or a
    * 200 response with the content if it is not empty.

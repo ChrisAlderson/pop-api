@@ -73,7 +73,7 @@ class ContentService {
      */
     this.query = query;
     /**
-     * The model of the servece.
+     * The item type of the service.
      * @type {string}
      */
     this.itemType = itemType;

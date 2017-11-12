@@ -17,7 +17,7 @@ import { name } from '../../package'
 /** @test {Routes} */
 describe('Routes', () => {
   /**
-   * The kxpress instance to test with.
+   * The express instance to test with.
    * @type {Express}
    */
   let app: $Application

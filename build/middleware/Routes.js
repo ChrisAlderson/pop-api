@@ -60,7 +60,7 @@ class Routes {
   /**
    * Setup the ExpressJS service.
    * @param {!Express} app - The ExpressJS instance.
-   * @param {!ExpressWinston} [logger] - Pretty output with Winston loggin.
+   * @param {!ExpressWinston} [logger] - Pretty output with Winston logging.
    * @returns {undefined}
    */
   _setupExpress(app, logger) {

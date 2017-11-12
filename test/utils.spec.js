@@ -44,7 +44,7 @@ describe('utils', () => {
   })
 
   /** @test {executeCommand} */
-  it('should succesfully execute a command', done => {
+  it('should successfully execute a command', done => {
     utils.executeCommand('git', [
       'rev-parse',
       '--short',

@@ -1,4 +1,4 @@
-// Export the neseccary modules.
+// Export the necessary modules.
 export Cli from './Cli'
 export Database from './Database'
 export HttpServer from './HttpServer'

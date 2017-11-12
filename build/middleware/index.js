@@ -27,7 +27,7 @@ var _Routes3 = _interopRequireDefault(_Routes2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.Cli = _Cli3.default; // Export the neseccary modules.
+exports.Cli = _Cli3.default; // Export the necessary modules.
 
 exports.Database = _Database3.default;
 exports.HttpServer = _HttpServer3.default;

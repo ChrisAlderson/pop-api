@@ -77,7 +77,7 @@ describe('PopApi', () => {
     PopApi.init({
       name,
       version
-    }).then(res => {
+    }).then(() => {
       masterStub.restore()
       forkStub.restore()
 
