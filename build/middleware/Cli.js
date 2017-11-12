@@ -19,7 +19,7 @@ class Cli {
   /**
    * Create a new Cli object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the cli to.
-   * @param {!Ojbect} options - The options for the cli.
+   * @param {!Object} options - The options for the cli.
    * @param {?Array<string>} options.argv - The arguments to be parsed by
    * commander.
    * @param {!string} options.name - The name of the Cli program.

@@ -17,12 +17,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * ContentService class for the CRUD operations.
  * @type {ContentService}
  */
+
+/**
+ * MongoDB object modeling designed to work in an asynchronous environment.
+ * @external {MongooseModel} https://github.com/Automattic/mongoose
+ */
 class ContentService {
 
   /**
    * Create a new ContentService.
    * @param {!Object} options - The options for the content service.
-   * @param {!Model} options.Model - The model of the service.
+   * @param {!MongooseModel} options.Model - The model of the service.
    * @param {!string} options.itemType - The item type of the service.
    * @param {!Object} options.projection - The projection of the service.
    * @param {!Object} options.query - The query of the service.
@@ -49,7 +54,7 @@ class ContentService {
   }) {
     /**
      * The item type of the service.
-     * @type {Model}
+     * @type {MongooseModel}
      */
     this.Model = Model;
     /**
@@ -96,7 +101,7 @@ class ContentService {
 
   /**
    * The model of the service.
-   * @type {Model}
+   * @type {MongooseModel}
    */
   getContents(base = '/') {
     return this.Model.count(this.query).then(count => {
@@ -117,7 +122,7 @@ class ContentService {
    * @param {!number} [p=1] - The page to get.
    * @param {!Object} [query=this.query] - A copy of the query object to
    * get the objects.
-   * @returns {Promise<Array<Model>, Error>} - The content of one page.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The content of one page.
    */
   getPage(sort, p = 1, query = _extends({}, this.query)) {
     const page = !isNaN(p) ? Number(p) - 1 : 0;
@@ -152,7 +157,7 @@ class ContentService {
    * Get the content from the database with an id.
    * @param {!string} id - The id of the content to get.
    * @param {!Object} projection - The projection for the content.
-   * @returns {Promise<Model, Error>} - The details of the content.
+   * @returns {Promise<MongooseModel, Error>} - The details of the content.
    */
   getContent(id, projection) {
     return this.Model.findOne({
@@ -163,7 +168,7 @@ class ContentService {
   /**
    * Insert the content into the database.
    * @param {!Object} obj - The object to insert.
-   * @returns {Promise<Model, Error>} - The created content.
+   * @returns {Promise<MongooseModel, Error>} - The created content.
    */
   createContent(obj) {
     return new this.Model(obj).save();
@@ -172,7 +177,7 @@ class ContentService {
   /**
    * Insert multiple content models into the database.
    * @param {!Array<Object>} arr - The array of content to insert.
-   * @returns {Promise<Array<Model>, Error>} - The inserted content.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The inserted content.
    */
   createMany(arr) {
     return (0, _pMap2.default)(arr, async obj => {
@@ -190,7 +195,7 @@ class ContentService {
    * Update the content.
    * @param {!string} id - The id of the content to get.
    * @param {!Object} obj - The object to update.
-   * @returns {Promise<Model, Error>} - The updated content.
+   * @returns {Promise<MongooseModel, Error>} - The updated content.
    */
   updateContent(id, obj) {
     return this.Model.findOneAndUpdate({
@@ -204,7 +209,7 @@ class ContentService {
   /**
    * Update multiple content models into the database.
    * @param {!Array<Object>} arr - The array of content to update.
-   * @returns {Promise<Array<Model>, Error>} - The updated content.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The updated content.
    */
   updateMany(arr) {
     return this.createMany(arr);
@@ -213,7 +218,7 @@ class ContentService {
   /**
    * Delete a content model.
    * @param {!string} id - The id of the content to delete.
-   * @returns {Promise<Model, Error>} - The deleted content.
+   * @returns {Promise<MongooseModel, Error>} - The deleted content.
    */
   deleteContent(id) {
     return this.Model.findOneAndRemove({
@@ -224,7 +229,7 @@ class ContentService {
   /**
    * Delete multiple content models from the database.
    * @param {!Array<Object>} arr - The array of content to delete.
-   * @returns {Promise<Array<Model>, Error>} - The deleted content.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The deleted content.
    */
   deleteMany(arr) {
     return (0, _pMap2.default)(arr, obj => this.deleteContent(obj._id));
@@ -232,7 +237,7 @@ class ContentService {
 
   /**
    * Get random content.
-   * @returns {Promise<Model, Error>} - Random content.
+   * @returns {Promise<MongooseModel, Error>} - Random content.
    */
   getRandomContent() {
     return this.Model.aggregate([{

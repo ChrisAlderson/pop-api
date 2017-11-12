@@ -23,20 +23,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @type {Server}
  */
 
-/** @external {http~Server} https://nodejs.org/dist/latest-v8.x/docs/api/http.html#http_class_http_server */
+/** @external {http~Server} https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_server */
 class HttpServer {
 
   /**
    * Create a new Server object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the server to.
-   * @param {!Ojbect} options - The options for the server.
+   * @param {!Object} options - The options for the server.
    * @param {!Express} options.app - The Express application.
    */
 
 
   /**
-   * The http server object.
-   * @type {http~Server}
+   * the http server object.
+   * @type {http~server}
    * @see https://nodejs.org/api/http.html#http_http_createserver_requestlistener
    */
   constructor(PopApi, {
@@ -44,8 +44,20 @@ class HttpServer {
     port = process.env.PORT,
     workers = 2
   }) {
+    /**
+     * The port on which the API will run on. Default is `5000`.
+     * @type {number}
+     */
     this._port = port || 5000;
+    /**
+     * The amount of workers on the cluster.
+     * @type {number}
+     */
     this._server = _http2.default.createServer(app);
+    /**
+     * The amount of workers on the cluster.
+     * @type {number}
+     */
     this._workers = workers;
 
     this._setupApi(app);
@@ -106,8 +118,8 @@ class HttpServer {
 
   /**
    * Method to stop the API from running.
-   * @param {Database} connection - The database connection to close.
-   * @param {Function} done - function to exit the API.
+   * @param {!Database} connection - The database connection to close.
+   * @param {?Function} [done=() => {}] - function to exit the API.
    * @returns {undefined}
    */
   closeApi(connection, done = () => {}) {

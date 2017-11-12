@@ -42,16 +42,16 @@ class PopApi {
    * @param {!string} options.version - The version of your API.
    * @param {?boolean} [options.pretty] - Pretty logging output.
    * @param {?boolean} [options.quiet] - No logging output.
-   * @param {?Array<string>} [options.hosts] - The hosts of the database
-   * cluster.
-   * @param {?number} [options.dbPort] - The port the database is on.
+   * @param {?Array<string>} [options.hosts=['localhost']] - The hosts of
+   * the database cluster.
+   * @param {?number} [options.dbPort=27017] - The port the database is on.
    * @param {?string} [options.username] - The username for the database
    * connection.
    * @param {?string} [options.password] - The password for the database
    * connection.
    * @param {?number} [options.serverPort] - The port the API will run on.
-   * @param {?number} [options.workers] - The number of workers for the API.
-   * @returns {undefined}
+   * @param {?number} [options.workers=2] - The number of workers for the API.
+   * @returns {Promise<PopApi, Error>} - The initialized PopApi instance.
    */
 
 
@@ -94,12 +94,8 @@ class PopApi {
       pretty,
       quiet
     }, PopApi.loggerArgs);
-    PopApi.use(_middleware.Logger, _extends({
-      type: 'winston'
-    }, loggerOpts));
-    PopApi.use(_middleware.Logger, _extends({
-      type: 'express'
-    }, loggerOpts));
+    PopApi.use(_middleware.Logger, loggerOpts);
+    PopApi.use(_middleware.Logger, loggerOpts);
     PopApi.use(_middleware.Database, {
       database: name,
       hosts,
@@ -107,7 +103,7 @@ class PopApi {
       password,
       port: dbPort
     });
-    PopApi.use(_middleware.Server, {
+    PopApi.use(_middleware.HttpServer, {
       app,
       workers,
       port: serverPort
@@ -142,16 +138,15 @@ class PopApi {
    * A map of the installed plugins.
    * @type {Map<any>}
    */
-  static async use(Plugin, ...args) {
-    const { name } = Plugin.constructor;
-    if (PopApi._installedPlugins.has(name)) {
+  static use(Plugin, ...args) {
+    if (PopApi._installedPlugins.has(Plugin)) {
       return this;
     }
 
-    const plugin = typeof Plugin === 'function' ? await new Plugin(this, ...args) : null;
+    const plugin = typeof Plugin === 'function' ? new Plugin(this, ...args) : null;
 
     if (plugin) {
-      PopApi._installedPlugins.set(name, plugin);
+      PopApi._installedPlugins.set(Plugin, plugin);
     }
 
     return this;

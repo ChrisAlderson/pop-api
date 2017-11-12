@@ -27,7 +27,7 @@ class Routes {
   /**
    * Create a new Routes object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the routes to.
-   * @param {!Ojbect} options - The options for the routes.
+   * @param {!Object} options - The options for the routes.
    * @param {!Express} options.app - The Express application.
    * @param {?Array<Object>} options.controllers - The controllers to register.
    */
