@@ -32,7 +32,7 @@ describe('Database', () => {
   let database: Database
 
   /**
-   * Hook for setting up the Setup tests.
+   * Hook for setting up the Database tests.
    * @type {Function}
    */
   before(() => {
@@ -202,7 +202,7 @@ describe('Database', () => {
   })
 
   /**
-   * Hook for tearing down the Setup tests.
+   * Hook for tearing down the Database tests.
    * @type {Function}
    */
   after(done => {

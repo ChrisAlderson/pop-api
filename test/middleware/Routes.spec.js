@@ -35,7 +35,7 @@ describe('Routes', () => {
   let routes: Routes
 
   /**
-   * Hook for setting up the Setup tests.
+   * Hook for setting up the Routes tests.
    * @type {Function}
    */
   before(() => {

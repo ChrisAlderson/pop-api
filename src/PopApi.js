@@ -10,9 +10,9 @@ import { join } from 'path'
 import {
   Cli,
   Database,
+  HttpServer,
   Logger,
-  Routes,
-  Server
+  Routes
 } from './middleware'
 import * as utils from './utils'
 
@@ -54,16 +54,16 @@ export default class PopApi {
    * @param {!string} options.version - The version of your API.
    * @param {?boolean} [options.pretty] - Pretty logging output.
    * @param {?boolean} [options.quiet] - No logging output.
-   * @param {?Array<string>} [options.hosts] - The hosts of the database
-   * cluster.
-   * @param {?number} [options.dbPort] - The port the database is on.
+   * @param {?Array<string>} [options.hosts=['localhost']] - The hosts of
+   * the database cluster.
+   * @param {?number} [options.dbPort=27017] - The port the database is on.
    * @param {?string} [options.username] - The username for the database
    * connection.
    * @param {?string} [options.password] - The password for the database
    * connection.
    * @param {?number} [options.serverPort] - The port the API will run on.
-   * @param {?number} [options.workers] - The number of workers for the API.
-   * @returns {undefined}
+   * @param {?number} [options.workers=2] - The number of workers for the API.
+   * @returns {Promise<PopApi, Error>} - The initialized PopApi instance.
    */
   static async init({
     controllers,
@@ -77,7 +77,7 @@ export default class PopApi {
     password,
     serverPort = process.env.PORT,
     workers = 2
-  }: Object): Object {
+  }: Object): Promise<Object | Error> {
     const { app } = PopApi
     const logDir = join(...[
       __dirname,
@@ -99,14 +99,8 @@ export default class PopApi {
       quiet,
       ...PopApi.loggerArgs
     }
-    PopApi.use(Logger, {
-      type: 'winston',
-      ...loggerOpts
-    })
-    PopApi.use(Logger, {
-      type: 'express',
-      ...loggerOpts
-    })
+    PopApi.use(Logger, loggerOpts)
+    PopApi.use(Logger, loggerOpts)
     PopApi.use(Database, {
       database: name,
       hosts,
@@ -114,7 +108,7 @@ export default class PopApi {
       password,
       port: dbPort
     })
-    PopApi.use(Server, {
+    PopApi.use(HttpServer, {
       app,
       workers,
       port: serverPort
@@ -137,18 +131,17 @@ export default class PopApi {
    * @returns {Promise<PopApi>} - The PopApi instance with the installed
    * plugins.
    */
-  static async use(Plugin: any, ...args: any): any {
-    const { name } = Plugin.constructor
-    if (PopApi._installedPlugins.has(name)) {
+  static use(Plugin: any, ...args: any): any {
+    if (PopApi._installedPlugins.has(Plugin)) {
       return this
     }
 
     const plugin = typeof Plugin === 'function'
-      ? await new Plugin(this, ...args)
+      ? new Plugin(this, ...args)
       : null
 
     if (plugin) {
-      PopApi._installedPlugins.set(name, plugin)
+      PopApi._installedPlugins.set(Plugin, plugin)
     }
 
     return this

@@ -61,15 +61,14 @@ describe('PopApi', () => {
    */
   function testUse(msg: string): void {
     /** @test {PopApi.use} */
-    it(msg, done => {
+    it(msg, () => {
+      PopApi._installedPlugins = new Map()
       PopApi.use(Routes, {
         app: PopApi.app
-      }).then(() => {
-        expect(PopApi._installedPlugins).to.be.a('Map')
-        expect(PopApi._installedPlugins.size).to.equal(1)
+      })
 
-        done()
-      }).catch(done)
+      expect(PopApi._installedPlugins).to.be.a('Map')
+      expect(PopApi._installedPlugins.size).to.equal(1)
     })
   }
 
@@ -80,25 +79,18 @@ describe('PopApi', () => {
   ].map(testUse)
 
   /** @test {PopApi.use} */
-  it('should not register the plugin if it is not a class', done => {
-    PopApi.use({}).then(() => {
-      expect(PopApi._installedPlugins).to.be.a('Map')
-      expect(PopApi._installedPlugins.size).to.equal(1)
+  it('should not register the plugin if it is not a class', () => {
+    PopApi.use({})
 
-      done()
-    }).catch(done)
+    expect(PopApi._installedPlugins).to.be.a('Map')
+    expect(PopApi._installedPlugins.size).to.equal(1)
   })
 
   /**
    * Hook for tearing down the PopApi tests.
    * @type {Function}
    */
-  after(done => {
+  after(() => {
     process.env.NODE_ENV = 'test'
-
-    // PopApi.connection.disconnectMongoDb()
-    //   .then(() => done())
-    //   .catch(done)
-    done()
   })
 })

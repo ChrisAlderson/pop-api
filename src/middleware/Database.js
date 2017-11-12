@@ -49,7 +49,7 @@ export default class Database {
   /**
    * Create a new Database object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the database to.
-   * @param {!Ojbect} options - The options for the database.
+   * @param {!Object} options - The options for the database.
    * @param {!string} options.database - The arguments to be parsed by
    * @param {!Array<string>} [options.hosts=['localhost']] - The hosts for the
    * MongoDb connection.
@@ -127,7 +127,6 @@ export default class Database {
     const args = [
       '-d', this._database,
       '-c', `${collection}s`,
-      // '-o', jsonFile
       '-o', outputFile
     ]
     return executeCommand('mongoexport', args)

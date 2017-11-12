@@ -2,9 +2,9 @@
 import {
   Cli,
   Database,
+  HttpServer,
   Logger,
-  Routes,
-  Server
+  Routes
 } from './middleware'
 import {
   BaseContentController,
@@ -19,9 +19,9 @@ import * as utils from './utils'
 export default {
   Cli,
   Database,
+  HttpServer,
   Logger,
   Routes,
-  Server,
   BaseContentController,
   ContentService,
   IContentController,
@@ -33,9 +33,9 @@ export default {
 export {
   Cli,
   Database,
+  HttpServer,
   Logger,
   Routes,
-  Server,
   BaseContentController,
   ContentService,
   IContentController,

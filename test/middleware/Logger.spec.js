@@ -164,7 +164,6 @@ describe('Logger', () => {
 
     val = logger._createLogger(false, false)
     expect(val).to.be.an('object')
-    global.logger.info()
 
     val = logger._createLogger(false, true)
     expect(val).to.be.an('object')

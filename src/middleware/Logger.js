@@ -44,13 +44,12 @@ export default class Logger {
   /**
    * Create a new Logger object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the logger to.
-   * @param {!Ojbect} options - The options for the logger.
-   * @param {!name} options.name - The name of the log file.
-   * @param {?string} [options.type] - The choice for the logger object.
+   * @param {!Object} options - The options for the logger.
+   * @param {!string} options.name - The name of the log file.
    * @param {?boolean} [options.pretty] - Pretty output with Winston logging.
    * @param {?boolean} [options.quiet] - No output.
    */
-  constructor(PopApi: any, {name, logDir, type, pretty, quiet}: Object): void {
+  constructor(PopApi: any, {name, logDir, pretty, quiet}: Object): void {
     /**
      * The log levels Winston will be using.
      * @type {Object}
@@ -72,13 +71,8 @@ export default class Logger {
      */
     this._logDir = logDir
 
-    if (type === 'winston') {
-      global.logger = this._getLogger('winston', pretty, quiet)
-    } else if (type === 'express') {
-      PopApi.expressLogger = this._getLogger('express', pretty, quiet)
-    } else {
-      throw new Error('')
-    }
+    global.logger = this._getLogger('winston', pretty, quiet)
+    PopApi.expressLogger = this._getLogger('express', pretty, quiet)
   }
 
   /**

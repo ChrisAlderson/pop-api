@@ -5,7 +5,7 @@
  * node.js command-line interfaces made easy
  * @external {Command} https://github.com/tj/commander.js
  */
-import command from 'commander'
+import Command from 'commander'
 
 /**
  * Class The class for the command line interface.
@@ -23,12 +23,12 @@ export default class Cli {
    * The command line parser to process the Cli inputs.
    * @type {Command}
    */
-  program: any
+  program: Object
 
   /**
    * Create a new Cli object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the cli to.
-   * @param {!Ojbect} options - The options for the cli.
+   * @param {!Object} options - The options for the cli.
    * @param {?Array<string>} options.argv - The arguments to be parsed by
    * commander.
    * @param {!string} options.name - The name of the Cli program.
@@ -39,7 +39,7 @@ export default class Cli {
      * The command line parser to process the Cli inputs.
      * @type {Command}
      */
-    this.program = command
+    this.program = Command
     /**
      * The name of the Cli program.
      * @type {string}
@@ -106,7 +106,7 @@ export default class Cli {
    * @param {!PopApi} PopApi - The PopApi instance to bind the logger to.
    * @returns {undefined}
    */
-  _run(argv, PopApi): void {
+  _run(argv?: Array<string>, PopApi: any): void {
     if (argv) {
       this.program.parse(argv)
     }

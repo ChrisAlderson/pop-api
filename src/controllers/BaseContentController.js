@@ -103,7 +103,7 @@ export default class BaseContentController extends IContentController {
    * @param {!Object} res - The ExpressJS response object.
    * @returns {Promise<Array<Object>, Object>} - The content of one page.
    */
-  getPage(req: $Request, res: $Response): Promise<Array<any> | Object> {
+  getPage(req: $Request, res: $Response): Promise<Array<Object> | Object> {
     const { page } = req.params
     const { sort, order } = req.query
 
@@ -121,7 +121,7 @@ export default class BaseContentController extends IContentController {
    * @param {!Object} res - The ExpressJS response object.
    * @returns {Promise<Object, Object>} - The details of a single content item.
    */
-  getContent(req: $Request, res: $Response): Promise<any> {
+  getContent(req: $Request, res: $Response): Promise<Object> {
     return this._service.getContent(req.params.id)
       .then(content => this._checkEmptyContent(res, content))
       .catch(err => res.status(500).json(err))
@@ -133,7 +133,7 @@ export default class BaseContentController extends IContentController {
    * @param {!Object} res - The ExpressJS response object.
    * @returns {Promise<Object, Object>} - The created content item.
    */
-  createContent(req: $Request, res: $Response): Promise<any> {
+  createContent(req: $Request, res: $Response): Promise<Object> {
     return this._service.createContent(req.body)
       .then(content => res.json(content))
       .catch(err => res.status(500).json(err))
@@ -145,7 +145,7 @@ export default class BaseContentController extends IContentController {
    * @param {!Object} res - The ExpressJS response object.
    * @returns {Promise<Object, Object>} - The updated content item.
    */
-  updateContent(req: $Request, res: $Response): Promise<any> {
+  updateContent(req: $Request, res: $Response): Promise<Object> {
     return this._service.updateContent(req.params.id, req.body)
       .then(content => res.json(content))
       .catch(err => res.status(500).json(err))
@@ -157,7 +157,7 @@ export default class BaseContentController extends IContentController {
    * @param {!Object} res - The ExpressJS response object.
    * @returns {Promise<Object, Object>} - The deleted content item
    */
-  deleteContent(req: $Request, res: $Response): Promise<any> {
+  deleteContent(req: $Request, res: $Response): Promise<Object> {
     return this._service.deleteContent(req.params.id)
       .then(content => res.json(content))
       .catch(err => res.status(500).json(err))
@@ -169,7 +169,7 @@ export default class BaseContentController extends IContentController {
    * @param {!Object} res - The ExpressJS response object.
    * @returns {Promise<Object, Object>} - A random item.
    */
-  getRandomContent(req: $Request, res: $Response): Promise<any> {
+  getRandomContent(req: $Request, res: $Response): Promise<Object> {
     return this._service.getRandomContent()
       .then(content => this._checkEmptyContent(res, content))
       .catch(err => res.status(500).json(err))

@@ -37,22 +37,29 @@ const controllers = [{
   }
 }]
 
-// `init` is a helper method to registers the built in middleware and
-// returns the PopApi instance. You can also register the individual
-// middlewares with more options.
-PopApi.init({
-  controllers,
-  name,
-  version
-})
+/**
+ * `init` is a helper method to registers the built in middleware and
+ * returns the PopApi instance. You can also register the individual
+ * middlewares with more options.
+ * @returns {undefined}
+ */
+async function setup() {
+  await PopApi.init({
+    controllers,
+    name,
+    version
+  })
 
-// Register the example middleware.
-PopApi.use(ExampleMiddleware, {
-  name: 'Chris'
-})
+  // Register the example middleware.
+  PopApi.use(ExampleMiddleware, {
+    name: 'Chris'
+  })
 
-// Server middleware uses the cluster module and forks the process.
-// `isMaster` ensures the message only gets called once.
-if (isMaster) {
-  logger.error(PopApi.exampleMiddleware)
+  // Server middleware uses the cluster module and forks the process.
+  // `isMaster` ensures the message only gets called once.
+  if (isMaster) {
+    logger.error(PopApi.exampleMiddleware)
+  }
 }
+
+setup()

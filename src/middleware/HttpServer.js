@@ -1,7 +1,7 @@
 // Import the necessary modules.
 // @flow
 import cluster from 'cluster'
-/** @external {http~Server} https://nodejs.org/dist/latest-v8.x/docs/api/http.html#http_class_http_server */
+/** @external {http~Server} https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_server */
 import http from 'http'
 import os from 'os'
 
@@ -20,8 +20,8 @@ export default class HttpServer {
   _port: number
 
   /**
-   * The http server object.
-   * @type {http~Server}
+   * the http server object.
+   * @type {http~server}
    * @see https://nodejs.org/api/http.html#http_http_createserver_requestlistener
    */
   _server: Server
@@ -35,7 +35,7 @@ export default class HttpServer {
   /**
    * Create a new Server object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the server to.
-   * @param {!Ojbect} options - The options for the server.
+   * @param {!Object} options - The options for the server.
    * @param {!Express} options.app - The Express application.
    */
   constructor(PopApi: any, {
@@ -43,8 +43,20 @@ export default class HttpServer {
     port = process.env.PORT,
     workers = 2
   }: Object): void {
+    /**
+     * The port on which the API will run on. Default is `5000`.
+     * @type {number}
+     */
     this._port = port || 5000
+    /**
+     * The amount of workers on the cluster.
+     * @type {number}
+     */
     this._server = http.createServer(app)
+    /**
+     * The amount of workers on the cluster.
+     * @type {number}
+     */
     this._workers = workers
 
     this._setupApi(app)
@@ -93,8 +105,8 @@ export default class HttpServer {
 
   /**
    * Method to stop the API from running.
-   * @param {Database} connection - The database connection to close.
-   * @param {Function} done - function to exit the API.
+   * @param {!Database} connection - The database connection to close.
+   * @param {?Function} [done=() => {}] - function to exit the API.
    * @returns {undefined}
    */
   closeApi(connection: Database, done: Function = () => {}): void {

@@ -103,6 +103,10 @@ describe('Cli', () => {
     stub.restore()
   })
 
+  /**
+   * Hook for tearing down the Cli tests.
+   * @type {Function}
+   */
   after(() => {
     error.restore()
     info.restore()
