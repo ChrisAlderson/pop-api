@@ -50,7 +50,7 @@ describe('utils', () => {
       '--short',
       'HEAD'
     ]).then(res => {
-      expect(res).to.be.undefined
+      expect(res).to.be.a('string')
       done()
     }).catch(done)
   })
