@@ -23,7 +23,7 @@ class Cli {
    * @param {?Array<string>} options.argv - The arguments to be parsed by
    * commander.
    * @param {!string} options.name - The name of the Cli program.
-   * @param {!string} [options.version] - The version of the Cli program.
+   * @param {!string} options.version - The version of the Cli program.
    */
 
 
@@ -43,17 +43,17 @@ class Cli {
      */
     this._name = name;
 
-    // Setup the Cli program.
-    this.program.version(`${this._name} v${version}`).option('-m, --mode <type>', 'Run the API in a particular mode.', /^(pretty|quiet|ugly)$/i);
+    this.initOptions(version);
+    this.program.on('--help', this.help.bind(this));
 
-    // Extra output on top of the default help output
-    this.program.on('--help', this.help);
-
-    this._run(argv, PopApi);
+    // if (argv) {
+    this._run(PopApi, argv);
+    // }
   }
 
   /**
-   * Method for displaying the --help option
+   * Initiate the options for the Cli.
+   * @param {!string} version - The version of the Cli program.
    * @returns {undefined}
    */
 
@@ -62,11 +62,19 @@ class Cli {
    * The command line parser to process the Cli inputs.
    * @type {Command}
    */
+  initOptions(version) {
+    return this.program.version(`${this._name} v${version}`).option('-m, --mode <type>', 'Run the API in a particular mode.', /^(pretty|quiet|ugly)$/i);
+  }
+
+  /**
+   * Method for displaying the --help option
+   * @returns {undefined}
+   */
   help() {
     console.info();
     console.info('  Examples:\n');
     console.info(`    $ ${this._name} -m <pretty|quiet|ugly>`);
-    console.info(`    $ ${this._name} --mode <pretty|quiet|ugly>\n`);
+    console.info(`    $ ${this._name} --mode <pretty|quiet|ugly>`);
   }
 
   /**
@@ -99,11 +107,11 @@ class Cli {
 
   /**
    * Run the Cli program.
-   * @param {?Array<string>} argv - The arguments to be parsed by commander.
    * @param {!PopApi} PopApi - The PopApi instance to bind the logger to.
+   * @param {?Array<string>} argv - The arguments to be parsed by commander.
    * @returns {undefined}
    */
-  _run(argv, PopApi) {
+  _run(PopApi, argv) {
     if (argv) {
       this.program.parse(argv);
     }

@@ -53,11 +53,26 @@ describe('Cli', () => {
   })
 
   /** @test {Cli#constructor} */
+  it('should create a new Cli instance without arguments to parse', () => {
+    const cli = new Cli({}, {
+      name,
+      version
+    })
+    expect(cli).to.be.an('object')
+  })
+
+  /** @test {Cli#constructor} */
   it('should check the attributes of the Cli', () => {
     expect(cli.program).to.exist
     expect(cli.program).to.be.an('object')
     expect(cli._name).to.exist
     expect(cli._name).to.be.a('string')
+  })
+
+  /** @test {Cli#initOptions} */
+  it('should initiate the options for the Cli', () => {
+    const val = cli.initOptions(version)
+    expect(val).to.be.an('object')
   })
 
   /** @test {Cli#help} */
@@ -86,7 +101,7 @@ describe('Cli', () => {
   it('should invoke no options and print the --help option', () => {
     const stub = sinon.stub(cli.program, 'outputHelp')
 
-    const val = cli._run(['', '', '--help'], {})
+    const val = cli._run({}, ['', '', '--help'])
     expect(val).to.be.undefined
 
     stub.restore()

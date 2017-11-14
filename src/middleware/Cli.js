@@ -32,7 +32,7 @@ export default class Cli {
    * @param {?Array<string>} options.argv - The arguments to be parsed by
    * commander.
    * @param {!string} options.name - The name of the Cli program.
-   * @param {!string} [options.version] - The version of the Cli program.
+   * @param {!string} options.version - The version of the Cli program.
    */
   constructor(PopApi: any, {argv, name, version}: Object): void {
     /**
@@ -46,19 +46,26 @@ export default class Cli {
      */
     this._name = name
 
-    // Setup the Cli program.
-    this.program
-      .version(`${this._name} v${version}`)
+    this.initOptions(version)
+    this.program.on('--help', this.help.bind(this))
+
+    if (argv) {
+      this._run(PopApi, argv)
+    }
+  }
+
+  /**
+   * Initiate the options for the Cli.
+   * @param {!string} version - The version of the Cli program.
+   * @returns {undefined}
+   */
+  initOptions(version: string): void {
+    return this.program.version(`${this._name} v${version}`)
       .option(
         '-m, --mode <type>',
         'Run the API in a particular mode.',
         /^(pretty|quiet|ugly)$/i
       )
-
-    // Extra output on top of the default help output
-    this.program.on('--help', this.help)
-
-    this._run(argv, PopApi)
   }
 
   /**
@@ -69,7 +76,7 @@ export default class Cli {
     console.info()
     console.info('  Examples:\n')
     console.info(`    $ ${this._name} -m <pretty|quiet|ugly>`)
-    console.info(`    $ ${this._name} --mode <pretty|quiet|ugly>\n`)
+    console.info(`    $ ${this._name} --mode <pretty|quiet|ugly>`)
   }
 
   /**
@@ -102,11 +109,11 @@ export default class Cli {
 
   /**
    * Run the Cli program.
-   * @param {?Array<string>} argv - The arguments to be parsed by commander.
    * @param {!PopApi} PopApi - The PopApi instance to bind the logger to.
+   * @param {?Array<string>} argv - The arguments to be parsed by commander.
    * @returns {undefined}
    */
-  _run(argv?: Array<string>, PopApi: any): void {
+  _run(PopApi: any, argv?: Array<string>): void {
     if (argv) {
       this.program.parse(argv)
     }
