@@ -10,7 +10,7 @@
     "express": "^4.16.2",
     "express-winston": "^2.4.0",
     "mkdirp": "^0.5.1",
-    "mongoose": "^4.13.2",
+    "mongoose": "^4.13.3",
     "p-map": "^1.2.0",
     "response-time": "^2.3.2",
     "rimraf": "^2.6.2",
