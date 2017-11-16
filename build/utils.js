@@ -26,9 +26,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @returns {Promise<string, Error>} - The path to the created directory.
  */
 // Import the necessary modules.
-function createTemp(path) {
+async function createTemp(path) {
   if ((0, _fs.existsSync)(path)) {
-    return (0, _del2.default)(`${path}/**`).then(([res]) => res);
+    await (0, _del2.default)([`${path}/**`]).then(([res]) => res);
   }
 
   return new Promise(resolve => {
