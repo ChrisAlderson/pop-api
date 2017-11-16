@@ -46,9 +46,9 @@ class Cli {
     this.initOptions(version);
     this.program.on('--help', this.help.bind(this));
 
-    // if (argv) {
-    this._run(PopApi, argv);
-    // }
+    if (argv) {
+      this._run(PopApi, argv);
+    }
   }
 
   /**
