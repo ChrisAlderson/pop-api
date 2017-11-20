@@ -46,6 +46,38 @@ export default class Routes {
   }
 
   /**
+   * Add security sentitive headers.
+   * @see https://github.com/shieldfy/API-Security-Checklist#output
+   * @param {!Object} req - The ExpressJS request object.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {undefined}
+   */
+  _addSecHeaders(req: $Request, res: $Response, next: Function): void {
+    res.setHeader('X-Content-Type-Options', 'no-sniff')
+    res.setHeader('X-Frame-Options', 'deny')
+    res.setHeader('Content-Security-Policy', 'default-src: \'none\'')
+
+    return next()
+  }
+
+  /**
+   * Remove security sentitive headers.
+   * @see https://github.com/shieldfy/API-Security-Checklist#output
+   * @param {!Object} req - The ExpressJS request object.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {undefined}
+   */
+  _removeSecHeaders(req: $Request, res: $Response, next: Function): void {
+    res.removeHeader('X-Powered-By')
+    res.removeHeader('X-AspNet-Version')
+    res.removeHeader('Server')
+
+    return next()
+  }
+
+  /**
    * Setup the ExpressJS service.
    * @param {!Express} app - The ExpressJS instance.
    * @param {!ExpressWinston} [logger] - Pretty output with Winston logging.
@@ -69,6 +101,10 @@ export default class Routes {
 
     // Enable response time tracking for HTTP request.
     app.use(responseTime())
+
+    // Set and remove the security sensitive headers.
+    app.use(this._addSecHeaders)
+    app.use(this._removeSecHeaders)
 
     // Enable HTTP request logging.
     if (logger) {

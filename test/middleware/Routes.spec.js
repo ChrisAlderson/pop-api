@@ -1,8 +1,9 @@
 // Import the necessary modules.
-// @flow
 /* eslint-disable no-unused-expressions */
+import chai, { expect } from 'chai'
+import chaiHttp from 'chai-http'
+// @flow
 import Express, { type $Application } from 'express'
-import { expect } from 'chai'
 import { join } from 'path'
 
 import ContentService from '../../src/controllers/ContentService'
@@ -39,6 +40,8 @@ describe('Routes', () => {
    * @type {Function}
    */
   before(() => {
+    chai.use(chaiHttp)
+
     app = Express()
     controllers = [{
       Controller: ExampleController,
@@ -58,6 +61,7 @@ describe('Routes', () => {
       app,
       controllers
     })
+    app.get('*', (req, res) => res.end())
   })
 
   /** @test {Routes#constructor} */
@@ -71,6 +75,33 @@ describe('Routes', () => {
     const registered = routes._registerControllers(express, controllers)
 
     expect(registered).to.be.undefined
+  })
+
+  /** @test {Routes#_addSecHeaders} */
+  it('should add the security headers', done => {
+    app.use(routes._addSecHeaders)
+    chai.request(app).get('/').then(res => {
+      expect(res).to.have.header('X-Content-Type-Options', 'no-sniff')
+      expect(res).to.have.header('X-Frame-Options', 'deny')
+      expect(res).to.have.header(
+        'Content-Security-Policy',
+        'default-src: \'none\''
+      )
+
+      done()
+    }).catch(done)
+  })
+
+  /** @test {Routes#_removeSecHeaders} */
+  it('should remove the security headers', done => {
+    app.use(routes._removeSecHeaders)
+    chai.request(app).get('/').then(res => {
+      expect(res).to.not.have.header('X-Powered-By')
+      expect(res).to.not.have.header('X-AspNet-Version')
+      expect(res).to.not.have.header('Server')
+
+      done()
+    }).catch(done)
   })
 
   /** @test {Routes#_setupExpress} */
