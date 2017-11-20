@@ -12,6 +12,10 @@ import {
   IContentController,
   IController
 } from './controllers'
+import {
+  ApiError,
+  statusCodes
+} from './helpers'
 
 import PopApi from './PopApi'
 import * as utils from './utils'
@@ -26,6 +30,8 @@ export default {
   ContentService,
   IContentController,
   IController,
+  ApiError,
+  statusCodes,
   PopApi,
   utils
 }
@@ -40,6 +46,8 @@ export {
   ContentService,
   IContentController,
   IController,
+  ApiError,
+  statusCodes,
   PopApi,
   utils
 }
