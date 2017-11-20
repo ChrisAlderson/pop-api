@@ -94,7 +94,7 @@ export default class Routes {
       message: 'Api not foind',
       statusCode: statusCodes.NOT_FOUND
     })
-	  console.log(statusCodes)
+
     return next(err)
   }
 

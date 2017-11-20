@@ -89,10 +89,7 @@ describe('Routes', () => {
       )
 
       done()
-    }).catch(err => {
-	    console.log(err)
-      done()
-    })
+    }).catch(done)
   })
 
   /** @test {Routes#_removeSecHeaders} */
