@@ -2,7 +2,7 @@
 // @flow
 /* eslint-disable no-unused-expressions */
 import cluster from 'cluster'
-import Express, { type $Application } from 'express'
+import express, { type $Application } from 'express'
 import http from 'http'
 import sinon from 'sinon'
 import { expect } from 'chai'
@@ -30,7 +30,7 @@ describe('HttpServer', () => {
    * @type {Function}
    */
   before(() => {
-    app = Express()
+    app = express()
     httpServer = new HttpServer({}, {
       app,
       workers: 0

@@ -3,7 +3,7 @@
 import chai, { expect } from 'chai'
 import chaiHttp from 'chai-http'
 // @flow
-import Express, { type $Application } from 'express'
+import express, { type $Application } from 'express'
 import { join } from 'path'
 
 import ContentService from '../../src/controllers/ContentService'
@@ -42,7 +42,7 @@ describe('Routes', () => {
   before(() => {
     chai.use(chaiHttp)
 
-    app = Express()
+    app = express()
     controllers = [{
       Controller: ExampleController,
       constructor: {
@@ -61,7 +61,6 @@ describe('Routes', () => {
       app,
       controllers
     })
-    app.get('*', (req, res) => res.end())
   })
 
   /** @test {Routes#constructor} */
@@ -71,16 +70,16 @@ describe('Routes', () => {
 
   /** @test {Routes#_registerControllers} */
   it('should register a controller', () => {
-    const express = Express()
-    const registered = routes._registerControllers(express, controllers)
+    const exp = express()
+    const registered = routes._registerControllers(exp, {}, controllers)
 
     expect(registered).to.be.undefined
   })
 
   /** @test {Routes#_addSecHeaders} */
   it('should add the security headers', done => {
-    app.use(routes._addSecHeaders)
-    chai.request(app).get('/').then(res => {
+    chai.request(app).get('/hello/world').then(res => {
+      expect(res).to.have.status(200)
       expect(res).to.have.header('X-Content-Type-Options', 'no-sniff')
       expect(res).to.have.header('X-Frame-Options', 'deny')
       expect(res).to.have.header(
@@ -94,8 +93,8 @@ describe('Routes', () => {
 
   /** @test {Routes#_removeSecHeaders} */
   it('should remove the security headers', done => {
-    app.use(routes._removeSecHeaders)
-    chai.request(app).get('/').then(res => {
+    chai.request(app).get('/hello/world').then(res => {
+      expect(res).to.have.status(200)
       expect(res).to.not.have.header('X-Powered-By')
       expect(res).to.not.have.header('X-AspNet-Version')
       expect(res).to.not.have.header('Server')
@@ -106,7 +105,7 @@ describe('Routes', () => {
 
   /** @test {Routes#_setupExpress} */
   it('should setup the Express instance', () => {
-    const express = Express()
+    const exp = express()
     const PopApi = {}
     new Logger(PopApi, { // eslint-disable-line no-new
       name,
@@ -119,14 +118,14 @@ describe('Routes', () => {
       type: 'express'
     })
 
-    routes._setupExpress(express, PopApi.expressLogger)
-    expect(express).to.not.equal(Express())
+    routes._setupExpress(exp, PopApi.expressLogger)
+    expect(express).to.not.equal(express())
   })
 
   /** @test {Routes#_setupExpress} */
   it('should setup the Express instance', () => {
-    const express = Express()
-    routes._setupExpress(express)
-    expect(express).to.not.equal(Express())
+    const exp = express()
+    routes._setupExpress(exp)
+    expect(express).to.not.equal(express())
   })
 })

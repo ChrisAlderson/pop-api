@@ -80,7 +80,7 @@ export default class ApiError extends Error {
      */
     this.isOperational = true
 
-    // Error.captureStackTrace(this, ApiError)
+    Error.captureStackTrace(this, ApiError)
   }
 
 }

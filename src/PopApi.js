@@ -4,7 +4,7 @@
  * Fast, unopinionated, minimalist web framework for node.
  * @external {Express} https://github.com/expressjs/express
  */
-import Express, { type $Application } from 'express'
+import express, { type $Application } from 'express'
 import { join } from 'path'
 
 import {
@@ -26,7 +26,7 @@ export default class PopApi {
    * The Express instance for the PopApi framework.
    * @type {Express}
    */
-  static app: $Application = Express()
+  static app: $Application = express()
 
   /**
    * A map of the installed plugins.

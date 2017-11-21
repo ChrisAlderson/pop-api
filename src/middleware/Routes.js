@@ -2,8 +2,14 @@
 // @flow
 import bodyParser from 'body-parser'
 import compress from 'compression'
+import express, {
+  type $Application,
+  type $Request,
+  type $Response,
+  type NextFunction
+} from 'express'
 import responseTime from 'response-time'
-import type { $Application } from 'express'
+import { STATUS_CODES as statusMessages } from 'http'
 import type { logger as ExpressWinston } from 'express-winston'
 
 import {
@@ -25,29 +31,105 @@ export default class Routes {
    * @param {?Array<Object>} options.controllers - The controllers to register.
    */
   constructor(PopApi: any, {app, controllers}: Object): void {
-    this._setupExpress(app, PopApi.expressLogger)
-
-    if (controllers) {
-      this._registerControllers(app, controllers)
-    }
+    this._setupExpress(app, PopApi, controllers, PopApi.expressLogger)
 
     PopApi.app = app
   }
 
   /**
    * Register the controllers found in the controllers directory.
-   * @param {!Express} app - The Express instance to register the controllers
-   * to.
+   * @param {!Express} app - The Express instance to register the routers to.
+   * @param {!PopApi} PopApi - The PopApi instance to bind the routes to.
    * @param {!Array<Object>} controllers - The controllers to register.
    * @returns {undefined}
    */
-  _registerControllers(app: $Application, controllers: Array<Object>): void {
+  _registerControllers(
+    app: $Application,
+    PopApi: any,
+    controllers: Array<Object>
+  ): void {
     controllers.forEach(c => {
       const { Controller, constructor } = c
       const controller = new Controller(constructor)
 
-      controller.registerRoutes(app)
+      const router = express.Router()
+      controller.registerRoutes(router, PopApi)
+
+      app.use('/', router)
     })
+  }
+
+  /**
+   * Convert the thrown errors to an instance of ApiError.
+   * @param {!Error} err - The caught error.
+   * @param {!Object} req - The ExpressJS request object.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {undefined}
+   */
+  _convertErrors(
+    err: Error,
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): mixed {
+    if (!(err instanceof ApiError)) {
+      const error = new ApiError({
+        message: err.message
+      })
+      return next(error)
+    }
+
+    return next(err)
+  }
+
+  /**
+   * Catch the 404 errors.
+   * @param {!Object} req - The ExpressJS request object.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {undefined}
+   */
+  _setNotFoundHandler(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): mixed {
+    const err = new ApiError({
+      message: 'Api not foind',
+      status: statusCodes.NOT_FOUND
+    })
+
+    return next(err)
+  }
+
+  /**
+   * Error handler middleware
+   * @param {!ApiError} err - The caught error.
+   * @param {!Object} req - The ExpressJS request object.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {undefined}
+   */
+  _setErrorHandler(
+    err: ApiError,
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Object {
+    const body: {
+      [key: string]: string
+    } = {
+      message: err.isPublic
+        ? err.message
+        : `${err.status} ${statusMessages[err.status]}`
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      body.stack = err.stack
+    }
+
+    return res.status(err.status).json(body)
   }
 
   /**
@@ -58,7 +140,7 @@ export default class Routes {
    * @param {!Function} next - The ExpressJS next function.
    * @returns {undefined}
    */
-  _addSecHeaders(req: $Request, res: $Response, next: Function): void {
+  _addSecHeaders(req: $Request, res: $Response, next: NextFunction): mixed {
     res.setHeader('X-Content-Type-Options', 'no-sniff')
     res.setHeader('X-Frame-Options', 'deny')
     res.setHeader('Content-Security-Policy', 'default-src: \'none\'')
@@ -74,7 +156,7 @@ export default class Routes {
    * @param {!Function} next - The ExpressJS next function.
    * @returns {undefined}
    */
-  _removeSecHeaders(req: $Request, res: $Response, next: Function): void {
+  _removeSecHeaders(req: $Request, res: $Response, next: NextFunction): mixed {
     res.removeHeader('X-Powered-By')
     res.removeHeader('X-AspNet-Version')
     res.removeHeader('Server')
@@ -83,28 +165,19 @@ export default class Routes {
   }
 
   /**
-   *
-   * @param {!Object} req - The ExpressJS request object.
-   * @param {!Object} res - The ExpressJS response object.
-   * @param {!Function} next - The ExpressJS next function.
-   * @returns {undefined}
-   */
-  _setErrorHandling(req: $Request, res: $Response, next: Function): void {
-    const err = new ApiError({
-      message: 'Api not foind',
-      statusCode: statusCodes.NOT_FOUND
-    })
-
-    return next(err)
-  }
-
-  /**
    * Setup the ExpressJS service.
    * @param {!Express} app - The ExpressJS instance.
+   * @param {!PopApi} PopApi - The PopApi instance to bind the routes to.
+   * @param {!Array<Object>} controllers - The controllers to register.
    * @param {!ExpressWinston} [logger] - Pretty output with Winston logging.
    * @returns {undefined}
    */
-  _setupExpress(app: $Application, logger?: ExpressWinston): void {
+  _setupExpress(
+    app: $Application,
+    PopApi?: any,
+    controllers?: Array<Object>,
+    logger?: ExpressWinston
+  ): void {
     // Enable parsing URL encoded bodies.
     app.use(bodyParser.urlencoded({
       extended: true
@@ -127,8 +200,19 @@ export default class Routes {
     app.use(this._addSecHeaders)
     app.use(this._removeSecHeaders)
 
+    // Register the controllers.
+    if (controllers) {
+      this._registerControllers(app, PopApi, controllers)
+    }
+
+    // Convert the caught errors to the ApiError instance.
+    app.use(this._convertErrors)
+
+    // Set the default not found handling middleware.
+    app.use(this._setNotFoundHandler)
+
     // Set the default error handling middleware.
-    app.use(this._setErrorHandling)
+    app.use(this._setErrorHandler)
 
     // Enable HTTP request logging.
     if (logger) {

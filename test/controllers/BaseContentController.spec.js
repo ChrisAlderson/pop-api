@@ -4,7 +4,7 @@ import chai, { expect } from 'chai'
 // @flow
 /* eslint-disable no-unused-expressions */
 import chaiHttp from 'chai-http'
-import Express, { type $Application } from 'express'
+import express, { type $Application } from 'express'
 import sinon from 'sinon'
 
 import BaseContentController from '../../src/controllers/BaseContentController'
@@ -56,7 +56,7 @@ describe('BaseContentController', () => {
   before(done => {
     chai.use(chaiHttp)
 
-    app = Express()
+    app = express()
     app.use(bodyParser.urlencoded({
       extended: true
     }))

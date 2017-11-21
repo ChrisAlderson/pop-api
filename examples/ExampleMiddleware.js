@@ -1,4 +1,5 @@
 // @flow
+
 /**
  * Example middleware to use with PopApi.
  * @type {ExampleMiddleware}
