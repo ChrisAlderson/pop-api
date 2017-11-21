@@ -192,7 +192,7 @@ export default class Logger {
   _createExpressWinston(pretty?: boolean): ExpressWinston {
     return new ExpressWinston({
       winstonInstance: this._createWinston(pretty),
-      expressFormat: true
+      statusLevels: true
     })
   }
 

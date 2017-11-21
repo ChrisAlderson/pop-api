@@ -96,7 +96,7 @@ export default class Routes {
     next: NextFunction
   ): mixed {
     const err = new ApiError({
-      message: 'Api not foind',
+      message: 'Api not found',
       status: statusCodes.NOT_FOUND
     })
 
@@ -117,19 +117,20 @@ export default class Routes {
     res: $Response,
     next: NextFunction
   ): Object {
+    const { status } = err
     const body: {
       [key: string]: string
     } = {
       message: err.isPublic
         ? err.message
-        : `${err.status} ${statusMessages[err.status]}`
+        : `${status} ${statusMessages[status]}`
     }
 
     if (process.env.NODE_ENV === 'development') {
       body.stack = err.stack
     }
 
-    return res.status(err.status).json(body)
+    return res.status(status).json(body)
   }
 
   /**
@@ -196,6 +197,11 @@ export default class Routes {
     // Enable response time tracking for HTTP request.
     app.use(responseTime())
 
+    // Enable HTTP request logging.
+    if (logger) {
+      app.use(logger)
+    }
+
     // Set and remove the security sensitive headers.
     app.use(this._addSecHeaders)
     app.use(this._removeSecHeaders)
@@ -213,11 +219,6 @@ export default class Routes {
 
     // Set the default error handling middleware.
     app.use(this._setErrorHandler)
-
-    // Enable HTTP request logging.
-    if (logger) {
-      app.use(logger)
-    }
   }
 
 }
