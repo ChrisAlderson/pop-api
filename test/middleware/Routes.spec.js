@@ -4,6 +4,7 @@ import chai, { expect } from 'chai'
 import chaiHttp from 'chai-http'
 // @flow
 import express, { type $Application } from 'express'
+import sinon from 'sinon'
 import { join } from 'path'
 
 import ContentService from '../../src/controllers/ContentService'
@@ -57,7 +58,11 @@ describe('Routes', () => {
       }
     }]
 
-    routes = new Routes({}, {
+    routes = new Routes({
+      expressLogger(req, res, next) {
+        return next()
+      }
+    }, {
       app,
       controllers
     })
@@ -75,6 +80,54 @@ describe('Routes', () => {
 
     expect(registered).to.be.undefined
   })
+
+  /** @test {Routes#_convertErrors} */
+  it('should catch a 500 internal server error with a default error', done => {
+    chai.request(app).get('/error')
+      .then(done)
+      .catch(err => {
+        expect(err).to.have.status(500)
+        done()
+      })
+  })
+
+  /** @test {routes#_setNotFoundHandler} */
+  it('should catch a 404 not found error', done => {
+    chai.request(app).get('/not-found')
+      .then(done)
+      .catch(err => {
+        expect(err).to.have.status(404)
+        done()
+      })
+  })
+
+  /**
+   * Helper function for the '_setErrorHandler' method.
+   * @param {!string} env - The value for the NODE_ENV stub.
+   * @returns {undefined}
+   */
+  function testErrorHandler(env: string): void {
+    /** @test {routes#_setErrorHandler} */
+    it('should catch a 500 internal server error with a cutom error', done => {
+      const stub = sinon.stub(process, 'env')
+      stub.value({
+        NODE_ENV: env
+      })
+
+      chai.request(app).get('/custom-error').then(res => {
+        stub.restore()
+        done(res)
+      }).catch(err => {
+        expect(err).to.have.status(500)
+        stub.restore()
+
+        done()
+      })
+    })
+  }
+
+  // Execute the tests.
+  ['development', 'test'].map(testErrorHandler)
 
   /** @test {Routes#_addSecHeaders} */
   it('should add the security headers', done => {
