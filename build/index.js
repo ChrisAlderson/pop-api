@@ -37,8 +37,7 @@ exports.default = {
   statusCodes: _helpers.statusCodes,
   PopApi: _PopApi2.default,
   utils
-}; // Import the necessary modules.
-
+};
 exports.Cli = _middleware.Cli;
 exports.Database = _middleware.Database;
 exports.HttpServer = _middleware.HttpServer;

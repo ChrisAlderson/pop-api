@@ -23,8 +23,7 @@ var _IController3 = _interopRequireDefault(_IController2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.BaseContentController = _BaseContentController3.default; // Export the necessary modules.
-
+exports.BaseContentController = _BaseContentController3.default;
 exports.ContentService = _ContentService3.default;
 exports.IContentController = _IContentController3.default;
 exports.IController = _IController3.default;

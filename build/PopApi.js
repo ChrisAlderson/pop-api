@@ -4,13 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; // Import the necessary modules.
-
-/**
- * Fast, unopinionated, minimalist web framework for node.
- * @external {Express} https://github.com/expressjs/express
- */
-
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _express = require('express');
 
@@ -28,43 +22,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * The PopApi class with the middleware pattern.
- * @type {PopApi}
- */
 class PopApi {
-
-  /**
-   * The setup for the base framework.
-   * @param {!Object} options - The options for the framework.
-   * @param {!Array<Object>} options.controllers - The controllers to register.
-   * @param {!string} options.name - The name for your API.
-   * @param {!string} options.version - The version of your API.
-   * @param {?boolean} [options.pretty] - Pretty logging output.
-   * @param {?boolean} [options.quiet] - No logging output.
-   * @param {?Array<string>} [options.hosts=['localhost']] - The hosts of
-   * the database cluster.
-   * @param {?number} [options.dbPort=27017] - The port the database is on.
-   * @param {?string} [options.username] - The username for the database
-   * connection.
-   * @param {?string} [options.password] - The password for the database
-   * connection.
-   * @param {?number} [options.serverPort] - The port the API will run on.
-   * @param {?number} [options.workers=2] - The number of workers for the API.
-   * @returns {Promise<PopApi, Error>} - The initialized PopApi instance.
-   */
-
-
-  /**
-   * The database connection.
-   * @type {Database}
-   */
-
-
-  /**
-   * The Express instance for the PopApi framework.
-   * @type {Express}
-   */
   static async init({
     controllers,
     name,
@@ -118,26 +76,6 @@ class PopApi {
     return PopApi;
   }
 
-  /**
-   * Register middleware for the PopApi framework.
-   * @param {!Function} Plugin - The plugin to use.
-   * @param {!Object} args - The arguments passed down to the constructor of
-   * the plugin.
-   * @returns {Promise<PopApi>} - The PopApi instance with the installed
-   * plugins.
-   */
-
-
-  /**
-   * The arguments passed down to the logger middleware.
-   * @type {Object}
-   */
-
-
-  /**
-   * A map of the installed plugins.
-   * @type {Map<any>}
-   */
   static use(Plugin, ...args) {
     if (PopApi._installedPlugins.has(Plugin)) {
       return this;

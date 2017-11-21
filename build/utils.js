@@ -20,12 +20,6 @@ var _child_process = require('child_process');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Create a temporary directory for files for the API.
- * @param {!string} path - The path to the directory to create.
- * @returns {Promise<string, Error>} - The path to the created directory.
- */
-// Import the necessary modules.
 async function createTemp(path) {
   if ((0, _fs.existsSync)(path)) {
     await (0, _del2.default)([`${path}/**`]).then(([res]) => res);
@@ -37,12 +31,6 @@ async function createTemp(path) {
   });
 }
 
-/**
- * Execute a command from within the root folder.
- * @param {!string} cmd - The command to execute.
- * @param {?Array<string>} args - The arguments passed to the command.
- * @returns {Promise<string, Error>} - The output of the command.
- */
 function executeCommand(cmd, args) {
   return new Promise((resolve, reject) => {
     const res = (0, _child_process.spawn)(cmd, args);

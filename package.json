@@ -47,7 +47,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "./node_modules/.bin/babel src --out-dir build",
+    "build": "./node_modules/.bin/babel src --out-dir build --no-comments",
     "coveralls": "cat ./coverage/lcov.info | node ./node_modules/.bin/coveralls",
     "docs": "./node_modules/.bin/esdoc -c .esdoc.json",
     "flow": "./node_modules/.bin/flow",

@@ -15,6 +15,5 @@ var _statusCodes3 = _interopRequireDefault(_statusCodes2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.ApiError = _ApiError3.default; // Import the necessary modules.
-
+exports.ApiError = _ApiError3.default;
 exports.statusCodes = _statusCodes3.default;
