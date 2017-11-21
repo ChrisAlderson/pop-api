@@ -10,9 +10,11 @@ import sinon from 'sinon'
 import { expect } from 'chai'
 import { join } from 'path'
 
-import Database from '../../src/middleware/Database'
-import Logger from '../../src/middleware/Logger'
-import HttpServer from '../../src/middleware/HttpServer'
+import {
+  Database,
+  Logger,
+  HttpServer
+} from '../../src'
 import { name } from '../../package'
 
 /** @test {HttpServer} */
@@ -132,12 +134,12 @@ describe('HttpServer', () => {
 
   /** @test {HttpServer.closeApi} */
   it('should close the API', done => {
-    const connection = new Database({}, {
+    const database = new Database({}, {
       database: name
     })
 
-    httpServer.closeApi(connection)
-    httpServer.closeApi(connection, done)
+    httpServer.closeApi(database)
+    httpServer.closeApi(database, done)
   })
 
   /**

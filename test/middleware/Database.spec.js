@@ -8,7 +8,7 @@ import sinon from 'sinon'
 import { expect } from 'chai'
 import { join } from 'path'
 
-import Database from '../../src/middleware/Database'
+import { Database } from '../../src'
 import { name } from '../../package'
 
 /** @test {Database} */
@@ -138,17 +138,17 @@ describe('Database', () => {
     }).catch(done)
   }
 
-  /** @test {Database#connectMongoDb} */
+  /** @test {Database#connect} */
   it('should connect to MongoDB', done => {
-    testConnection(database.connectMongoDb.bind(database), 0, 1, done)
+    testConnection(database.connect.bind(database), 0, 1, done)
   })
 
-  /** @test {Database#disconnectMongoDb} */
+  /** @test {Database#disconnect} */
   it('should disconnect from MongoDB', done => {
-    testConnection(database.disconnectMongoDb.bind(database), 1, 0, done)
+    testConnection(database.disconnect.bind(database), 1, 0, done)
   })
 
-  /** @test {Database#connectMongoDb} */
+  /** @test {Database#connect} */
   it('should fail to authenticate with MongoDB', done => {
     expect(mongoose.connection.readyState).to.be.a('number')
     expect(mongoose.connection.readyState).to.equal(0)
@@ -159,7 +159,7 @@ describe('Database', () => {
       password: 'faulty'
     })
 
-    database.connectMongoDb()
+    database.connect()
       .then(done)
       .catch(err => {
         expect(err).to.be.an('Error')
@@ -209,7 +209,7 @@ describe('Database', () => {
     del.sync([tmp])
     stub.restore()
 
-    database.disconnectMongoDb()
+    database.disconnect()
       .then(() => done())
       .catch(done)
   })

@@ -1,15 +1,17 @@
 // Import the necessary modules.
+/* eslint-disable no-unused-expressions */
 import bodyParser from 'body-parser'
 import chai, { expect } from 'chai'
 // @flow
-/* eslint-disable no-unused-expressions */
 import chaiHttp from 'chai-http'
 import express, { type $Application } from 'express'
 import sinon from 'sinon'
 
-import BaseContentController from '../../src/controllers/BaseContentController'
-import ContentService from '../../src/controllers/ContentService'
-import Database from '../../src/middleware/Database'
+import {
+  BaseContentController,
+  ContentService,
+  Database
+} from '../../src'
 import {
   ExampleModel,
   exampleModel1,
@@ -77,7 +79,7 @@ describe('BaseContentController', () => {
     database = new Database({}, {
       database: name
     })
-    database.connectMongoDb()
+    database.connect()
       .then(() => done())
       .catch(done)
   })
@@ -342,7 +344,7 @@ describe('BaseContentController', () => {
     ExampleModel.findOneAndRemove({
       _id: exampleModel1._id
     }).exec()
-      .then(() => database.disconnectMongoDb())
+      .then(() => database.disconnect())
       .then(() => done())
       .catch(done)
   })

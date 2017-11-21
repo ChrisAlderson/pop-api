@@ -3,8 +3,10 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai'
 
-import ApiError from '../../src/helpers/ApiError'
-import statusCodes from '../../src/helpers/statusCodes'
+import {
+  ApiError,
+  statusCodes
+} from '../../src'
 
 /** @test {ApiError} */
 describe('ApiError', () => {

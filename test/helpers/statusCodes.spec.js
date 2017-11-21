@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai'
 
-import statusCodes from '../../src/helpers/statusCodes'
+import { statusCodes } from '../../src'
 
 /** @test {statusCodes} */
 describe('statusCodes', () => {

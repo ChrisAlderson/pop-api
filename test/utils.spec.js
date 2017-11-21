@@ -5,7 +5,7 @@ import del from 'del'
 import { expect } from 'chai'
 import { join } from 'path'
 
-import * as utils from '../src/utils'
+import { utils } from '../src'
 
 describe('utils', () => {
   /**

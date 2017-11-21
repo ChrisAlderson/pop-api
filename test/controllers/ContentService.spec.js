@@ -3,8 +3,10 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai'
 
-import ContentService from '../../src/controllers/ContentService'
-import Database from '../../src/middleware/Database'
+import {
+  ContentService,
+  Database
+} from '../../src'
 import {
   ExampleModel,
   exampleModel1,
@@ -43,7 +45,7 @@ describe('ContentService', () => {
     database = new Database({}, {
       database: name
     })
-    database.connectMongoDb()
+    database.connect()
       .then(() => done())
       .catch(done)
   })
@@ -187,7 +189,7 @@ describe('ContentService', () => {
    * @type {Function}
    */
   after(done => {
-    database.disconnectMongoDb()
+    database.disconnect()
       .then(() => done())
       .catch(done)
   })

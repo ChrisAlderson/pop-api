@@ -6,7 +6,7 @@ import mkdirp from 'mkdirp'
 import { expect } from 'chai'
 import { join } from 'path'
 
-import Logger from '../../src/middleware/Logger'
+import { Logger } from '../../src'
 import { name } from '../../package'
 
 /** @test {Logger} */

@@ -5,8 +5,10 @@ import cluster from 'cluster'
 import sinon from 'sinon'
 import { expect } from 'chai'
 
-import PopApi from '../src/PopApi'
-import Routes from '../src/middleware/Routes'
+import {
+  PopApi,
+  Routes
+} from '../src'
 import {
   name,
   version

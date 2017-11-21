@@ -7,9 +7,11 @@ import express, { type $Application } from 'express'
 import sinon from 'sinon'
 import { join } from 'path'
 
-import ContentService from '../../src/controllers/ContentService'
-import Logger from '../../src/middleware/Logger'
-import Routes from '../../src/middleware/Routes'
+import {
+  ContentService,
+  Logger,
+  Routes
+} from '../../src'
 import {
   ExampleController,
   ExampleModel
@@ -46,7 +48,7 @@ describe('Routes', () => {
     app = express()
     controllers = [{
       Controller: ExampleController,
-      constructor: {
+      args: {
         service: new ContentService({
           Model: ExampleModel,
           itemType: 'example',

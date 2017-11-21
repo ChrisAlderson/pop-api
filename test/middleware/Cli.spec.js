@@ -4,7 +4,7 @@
 import sinon from 'sinon'
 import { expect } from 'chai'
 
-import Cli from '../../src/middleware/Cli'
+import { Cli } from '../../src'
 import {
   name,
   version
