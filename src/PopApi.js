@@ -38,7 +38,7 @@ export default class PopApi {
    * The database connection.
    * @type {Database}
    */
-  static connection: Database
+  static database: Database
 
   /**
    * The arguments passed down to the logger middleware.
@@ -118,7 +118,7 @@ export default class PopApi {
       controllers
     })
 
-    await PopApi.connection.connectMongoDb()
+    await PopApi.database.connect()
 
     return PopApi
   }

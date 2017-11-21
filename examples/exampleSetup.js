@@ -25,7 +25,7 @@ import {
 // Create a controllers array with the controllers to register.
 const controllers = [{
   Controller: ExampleController,
-  constructor: {
+  args: {
     service: new ContentService({
       Model: ExampleModel,
       itemType: 'example',

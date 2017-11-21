@@ -83,14 +83,14 @@ export default class Database {
     this._username = username
     this._password = password
 
-    PopApi.connection = this
+    PopApi.database = this
   }
 
   /**
    * Connection and configuration of the MongoDB database.
    * @returns {Promise<undefined, Error>} - The promise to connect to MongoDB.
    */
-  connectMongoDb(): Promise<void> {
+  connect(): Promise<void> {
     let uri = 'mongodb://'
     if (this._username && this._password) {
       uri += `${this._username}:${this._password}@`
@@ -108,7 +108,7 @@ export default class Database {
    * @returns {Promise<undefined, Error>} - The promise to disconnect from
    * MongoDB.
    */
-  disconnectMongoDb(): Promise<void> {
+  disconnect(): Promise<void> {
     return mongoose.connection.close()
   }
 

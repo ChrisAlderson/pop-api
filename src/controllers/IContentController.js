@@ -40,7 +40,6 @@ export default class IContentController extends IController {
    * @abstract
    * @param {!string} sort - The property to sort on.
    * @param {!number} order - The way to sort the property.
-   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'sortContent'
    * @returns {Object} - The sort object.
    */

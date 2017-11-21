@@ -1,4 +1,5 @@
 // Import the necessary modules.
+// @flow
 import {
   Cli,
   Database,
@@ -20,22 +21,12 @@ import {
 import PopApi from './PopApi'
 import * as utils from './utils'
 
-export default {
-  Cli,
-  Database,
-  HttpServer,
-  Logger,
-  Routes,
-  BaseContentController,
-  ContentService,
-  IContentController,
-  IController,
-  ApiError,
-  statusCodes,
-  PopApi,
-  utils
-}
-
+/**
+ * Object with modules to expose.
+ * @type {Object}
+ * @ignore
+ */
+// const expose: Object = {
 export {
   Cli,
   Database,
@@ -51,3 +42,5 @@ export {
   PopApi,
   utils
 }
+
+// export expose

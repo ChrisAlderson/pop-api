@@ -105,13 +105,13 @@ export default class HttpServer {
 
   /**
    * Method to stop the API from running.
-   * @param {!Database} connection - The database connection to close.
+   * @param {!Database} database - The database connection to close.
    * @param {?Function} [done=() => {}] - function to exit the API.
    * @returns {undefined}
    */
-  closeApi(connection: Database, done: Function = () => {}): void {
+  closeApi(database: Database, done: Function = () => {}): void {
     this._server.close(() => {
-      connection.disconnectMongoDb().then(() => {
+      database.disconnect().then(() => {
         logger.info('Closed out remaining connections.')
         done()
       })

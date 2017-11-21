@@ -49,8 +49,8 @@ export default class Routes {
     controllers: Array<Object>
   ): void {
     controllers.forEach(c => {
-      const { Controller, constructor } = c
-      const controller = new Controller(constructor)
+      const { Controller, args } = c
+      const controller = new Controller(args)
 
       const router = express.Router()
       controller.registerRoutes(router, PopApi)
