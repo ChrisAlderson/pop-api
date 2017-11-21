@@ -2,12 +2,16 @@
 // @flow
 /* eslint-disable no-unused-expressions */
 import cluster from 'cluster'
+import del from 'del'
 import express, { type $Application } from 'express'
 import http from 'http'
+import mkdirp from 'mkdirp'
 import sinon from 'sinon'
 import { expect } from 'chai'
+import { join } from 'path'
 
 import Database from '../../src/middleware/Database'
+import Logger from '../../src/middleware/Logger'
 import HttpServer from '../../src/middleware/HttpServer'
 import { name } from '../../package'
 
@@ -26,10 +30,31 @@ describe('HttpServer', () => {
   let httpServer: HttpServer
 
   /**
+   * The directory where the logs are saved.
+   * @type {string}
+   */
+  let logDir: string
+
+  /**
    * Hook for setting up the HttpServer tests.
    * @type {Function}
    */
   before(() => {
+    logDir = join(...[
+      __dirname,
+      '..',
+      '..',
+      'tmp'
+    ])
+    mkdirp.sync(logDir)
+    new Logger({}, { // eslint-disable-line no-new
+      name,
+      logDir,
+      type: 'winston',
+      pretty: false,
+      quiet: true
+    })
+
     app = express()
     httpServer = new HttpServer({}, {
       app,
@@ -113,5 +138,13 @@ describe('HttpServer', () => {
 
     httpServer.closeApi(connection)
     httpServer.closeApi(connection, done)
+  })
+
+  /**
+   * Hook for tearing down the HttpServer tests.
+   * @type {Function}
+   */
+  after(() => {
+    del.sync([logDir])
   })
 })

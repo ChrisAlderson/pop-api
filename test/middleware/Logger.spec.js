@@ -1,6 +1,7 @@
 // Import the necessary modules.
 // @flow
 /* eslint-disable no-unused-expressions */
+import del from 'del'
 import mkdirp from 'mkdirp'
 import { expect } from 'chai'
 import { join } from 'path'
@@ -173,5 +174,13 @@ describe('Logger', () => {
   it('should not create an instance of ExpressWinston or Winston', () => {
     expect(logger._getLogger()).to.be.undefined
     expect(logger._getLogger('FAULTY')).to.be.undefined
+  })
+
+  /**
+   * Hook for tearing down the Logger tests.
+   * @type {Function}
+   */
+  after(() => {
+    del.sync([logDir])
   })
 })

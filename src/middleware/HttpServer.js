@@ -113,7 +113,6 @@ export default class HttpServer {
     this._server.close(() => {
       connection.disconnectMongoDb().then(() => {
         logger.info('Closed out remaining connections.')
-
         done()
       })
     })
