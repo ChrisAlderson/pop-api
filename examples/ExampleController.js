@@ -6,7 +6,11 @@ import type {
   NextFunction
 } from 'express'
 
-import BaseContentController from '../src/controllers/BaseContentController'
+import {
+  ApiError,
+  BaseContentController,
+  statusCodes
+} from '../src'
 
 /**
  * An example controller to register.
@@ -26,7 +30,15 @@ export default class ExampleController extends BaseContentController {
     // Include the routes from the BaseContentController.
     super.registerRoutes(router, PopApi)
 
-    router.route('/hello/:name').get(this.getHello)
+    // Assuming PopApi has authentication middleware registered.
+    if (PopApi && PopApi.authMiddleware) {
+      router.get('/hello/:name', PopApi.authMiddleware, this.getHello)
+    } else {
+      router.get('/hello/:name', this.getHello)
+    }
+
+    router.get('/error', this.getError)
+    router.get('/custom-error', this.getCustomError)
   }
 
   /**
@@ -41,6 +53,36 @@ export default class ExampleController extends BaseContentController {
     return res.json({
       msg: `Hello, ${name}`
     })
+  }
+
+  /**
+   * Throw an error on purpose as a demonstraction.
+   * @param {!Object} req - The ExpressJS request object.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
+   * @throws {Error} - An error occured!
+   * @returns {Error} - A demonstration error.
+   */
+  getError(req: $Request, res: $Response, next: NextFunction): mixed {
+    const err = new Error('An error occured!')
+    return next(err)
+  }
+
+  /**
+   * Throw a custom error on purpose as a demonstraction.
+   * @param {!Object} req - The ExpressJS request object.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
+   * @throws {Error} - A custom error occured!
+   * @returns {Error} - A demonstration error.
+   */
+  getCustomError(req: $Request, res: $Response, next: NextFunction): mixed {
+    const err = new ApiError({
+      message: 'A custom error occured!',
+      status: statusCodes.INTERNAL_SERVER_ERROR,
+      isPublic: true
+    })
+    return next(err)
   }
 
 }
