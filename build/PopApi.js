@@ -71,7 +71,7 @@ class PopApi {
       controllers
     });
 
-    await PopApi.connection.connectMongoDb();
+    await PopApi.database.connect();
 
     return PopApi;
   }

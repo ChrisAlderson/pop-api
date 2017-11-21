@@ -38,10 +38,10 @@ class Database {
     this._username = username;
     this._password = password;
 
-    PopApi.connection = this;
+    PopApi.database = this;
   }
 
-  connectMongoDb() {
+  connect() {
     let uri = 'mongodb://';
     if (this._username && this._password) {
       uri += `${this._username}:${this._password}@`;
@@ -54,7 +54,7 @@ class Database {
     }).catch(err => Promise.reject(new Error(err)));
   }
 
-  disconnectMongoDb() {
+  disconnect() {
     return _mongoose2.default.connection.close();
   }
 

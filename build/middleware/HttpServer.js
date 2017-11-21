@@ -61,9 +61,9 @@ class HttpServer {
     }
   }
 
-  closeApi(connection, done = () => {}) {
+  closeApi(database, done = () => {}) {
     this._server.close(() => {
-      connection.disconnectMongoDb().then(() => {
+      database.disconnect().then(() => {
         logger.info('Closed out remaining connections.');
         done();
       });

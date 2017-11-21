@@ -23,21 +23,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = {
-  Cli: _middleware.Cli,
-  Database: _middleware.Database,
-  HttpServer: _middleware.HttpServer,
-  Logger: _middleware.Logger,
-  Routes: _middleware.Routes,
-  BaseContentController: _controllers.BaseContentController,
-  ContentService: _controllers.ContentService,
-  IContentController: _controllers.IContentController,
-  IController: _controllers.IController,
-  ApiError: _helpers.ApiError,
-  statusCodes: _helpers.statusCodes,
-  PopApi: _PopApi2.default,
-  utils
-};
 exports.Cli = _middleware.Cli;
 exports.Database = _middleware.Database;
 exports.HttpServer = _middleware.HttpServer;
