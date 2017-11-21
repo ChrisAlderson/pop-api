@@ -23,11 +23,12 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'getContents'.
    * @returns {Promise<Array<string>, Object>} - A list of pages which are
    * available.
    */
-  getContents(req, res) {
+  getContents(req, res, next) {
     throw new Error('Using default method: \'getContents\'');
   }
 
@@ -36,6 +37,7 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!string} sort - The property to sort on.
    * @param {!number} order - The way to sort the property.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'sortContent'
    * @returns {Object} - The sort object.
    */
@@ -48,10 +50,11 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'getPage'.
-   * @returns {Promise<Array<Object>, Object>} - The content of one page.
+   * @returns {Promise<Array<Object>, Error>} - The content of one page.
    */
-  getPage(req, res) {
+  getPage(req, res, next) {
     throw new Error('Using default method: \'getPage\'');
   }
 
@@ -60,10 +63,11 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'getContent'.
-   * @returns {Promise<Object, Object>} - The details of a single content item.
+   * @returns {Promise<Object, Error>} - The details of a single content item.
    */
-  getContent(req, res) {
+  getContent(req, res, next) {
     throw new Error('Using default method: \'getContent\'');
   }
 
@@ -72,10 +76,11 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'createContent'.
-   * @returns {Promise<Object, Object>} - The created content item.
+   * @returns {Promise<Object, Error>} - The created content item.
    */
-  createContent(req, res) {
+  createContent(req, res, next) {
     throw new Error('Using default method: \'createContent\'');
   }
 
@@ -84,10 +89,11 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'updateContent'.
-   * @returns {Promise<Object, Object>} - The updated content item.
+   * @returns {Promise<Object, Error>} - The updated content item.
    */
-  updateContent(req, res) {
+  updateContent(req, res, next) {
     throw new Error('Using default method: \'updateContent\'');
   }
 
@@ -96,10 +102,11 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'deleteContent'.
-   * @returns {Promise<Object, Object>} - The deleted content item
+   * @returns {Promise<Object, Error>} - The deleted content item
    */
-  deleteContent(req, res) {
+  deleteContent(req, res, next) {
     throw new Error('Using default method: \'deleteContent\'');
   }
 
@@ -108,10 +115,11 @@ class IContentController extends _IController2.default {
    * @abstract
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
+   * @param {!Function} next - The ExpressJS next function.
    * @throws {Error} - Using default method: 'getRandomContent'.
-   * @returns {Promise<Object, Object>} - A random item.
+   * @returns {Promise<Object, Error>} - A random item.
    */
-  getRandomContent(req, res) {
+  getRandomContent(req, res, next) {
     throw new Error('Using default method: \'getRandomContent\'');
   }
 

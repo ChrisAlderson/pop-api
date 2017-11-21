@@ -15,7 +15,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @implements {IContentController}
  * @type {BaseContentController}
  */
-// Import the necessary modules.
 class BaseContentController extends _IContentController2.default {
 
   /**
@@ -35,10 +34,9 @@ class BaseContentController extends _IContentController2.default {
   }
 
   /**
-   * Register the default methods to the default routes.
-   * @param {!Express} app - The express instance to register the routes to.
+   * Default method to register the routes.
+   * @param {!Object} router - The express router to register the routes to.
    * @param {?PopApi} [PopApi] - The PopApi instance.
-   * @throws {Error} - Using default method: 'registerRoutes'
    * @returns {undefined}
    */
 
@@ -47,16 +45,16 @@ class BaseContentController extends _IContentController2.default {
    * The service of the content controller.
    * @type {ContentService}
    */
-  registerRoutes(app, PopApi) {
+  registerRoutes(router, PopApi) {
     const t = this._service.itemType;
 
-    app.get(`/${t}s`, this.getContents.bind(this));
-    app.get(`/${t}s/:page`, this.getPage.bind(this));
-    app.get(`/${t}/:id`, this.getContent.bind(this));
-    app.post(`/${t}s`, this.createContent.bind(this));
-    app.put(`/${t}/:id`, this.updateContent.bind(this));
-    app.delete(`/${t}/:id`, this.deleteContent.bind(this));
-    app.get(`/random/${t}`, this.getRandomContent.bind(this));
+    router.get(`/${t}s`, this.getContents.bind(this));
+    router.get(`/${t}s/:page`, this.getPage.bind(this));
+    router.get(`/${t}/:id`, this.getContent.bind(this));
+    router.post(`/${t}s`, this.createContent.bind(this));
+    router.put(`/${t}/:id`, this.updateContent.bind(this));
+    router.delete(`/${t}/:id`, this.deleteContent.bind(this));
+    router.get(`/random/${t}`, this.getRandomContent.bind(this));
   }
 
   /**
@@ -78,11 +76,12 @@ class BaseContentController extends _IContentController2.default {
    * Get all the available pages.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Array<string>, Object>} - A list of pages which are
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Array<string>, Error>} - A list of pages which are
    * available.
    */
-  getContents(req, res) {
-    return this._service.getContents().then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
+  getContents(req, res, next) {
+    return this._service.getContents().then(content => this._checkEmptyContent(res, content)).catch(err => next(err));
   }
 
   /**
@@ -101,67 +100,73 @@ class BaseContentController extends _IContentController2.default {
    * Get content from one page.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Array<Object>, Object>} - The content of one page.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Array<Object>, Error>} - The content of one page.
    */
-  getPage(req, res) {
+  getPage(req, res, next) {
     const { page } = req.params;
     const { sort, order } = req.query;
 
     const o = parseInt(order, 10) ? parseInt(order, 10) : -1;
     const s = typeof sort === 'string' ? this.sortContent(sort, o) : null;
 
-    return this._service.getPage(s, Number(page)).then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
+    return this._service.getPage(s, Number(page)).then(content => this._checkEmptyContent(res, content)).catch(err => next(err));
   }
 
   /**
    * Get a content item based on the id.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The details of a single content item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The details of a single content item.
    */
-  getContent(req, res) {
-    return this._service.getContent(req.params.id).then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
+  getContent(req, res, next) {
+    return this._service.getContent(req.params.id).then(content => this._checkEmptyContent(res, content)).catch(err => next(err));
   }
 
   /**
    * Create a new content item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The created content item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The created content item.
    */
-  createContent(req, res) {
-    return this._service.createContent(req.body).then(content => res.json(content)).catch(err => res.status(500).json(err));
+  createContent(req, res, next) {
+    return this._service.createContent(req.body).then(content => res.json(content)).catch(err => next(err));
   }
 
   /**
    * Update the info of one content item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The updated content item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The updated content item.
    */
-  updateContent(req, res) {
-    return this._service.updateContent(req.params.id, req.body).then(content => res.json(content)).catch(err => res.status(500).json(err));
+  updateContent(req, res, next) {
+    return this._service.updateContent(req.params.id, req.body).then(content => res.json(content)).catch(err => next(err));
   }
 
   /**
    * Delete a content item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The deleted content item
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The deleted content item
    */
-  deleteContent(req, res) {
-    return this._service.deleteContent(req.params.id).then(content => res.json(content)).catch(err => res.status(500).json(err));
+  deleteContent(req, res, next) {
+    return this._service.deleteContent(req.params.id).then(content => res.json(content)).catch(err => next(err));
   }
 
   /**
    * Get a random item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - A random item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - A random item.
    */
-  getRandomContent(req, res) {
-    return this._service.getRandomContent().then(content => this._checkEmptyContent(res, content)).catch(err => res.status(500).json(err));
+  getRandomContent(req, res, next) {
+    return this._service.getRandomContent().then(content => this._checkEmptyContent(res, content)).catch(err => next(err));
   }
 
 }
-exports.default = BaseContentController;
+exports.default = BaseContentController; // Import the necessary modules.

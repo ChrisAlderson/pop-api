@@ -177,7 +177,7 @@ class Logger {
   _createExpressWinston(pretty) {
     return new _expressWinston.logger({
       winstonInstance: this._createWinston(pretty),
-      expressFormat: true
+      statusLevels: true
     });
   }
 

@@ -3,11 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.utils = exports.PopApi = exports.IController = exports.IContentController = exports.ContentService = exports.BaseContentController = exports.Routes = exports.Logger = exports.HttpServer = exports.Database = exports.Cli = undefined;
+exports.utils = exports.PopApi = exports.statusCodes = exports.ApiError = exports.IController = exports.IContentController = exports.ContentService = exports.BaseContentController = exports.Routes = exports.Logger = exports.HttpServer = exports.Database = exports.Cli = undefined;
 
 var _middleware = require('./middleware');
 
 var _controllers = require('./controllers');
+
+var _helpers = require('./helpers');
 
 var _PopApi = require('./PopApi');
 
@@ -21,7 +23,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Import the necessary modules.
 exports.default = {
   Cli: _middleware.Cli,
   Database: _middleware.Database,
@@ -32,9 +33,12 @@ exports.default = {
   ContentService: _controllers.ContentService,
   IContentController: _controllers.IContentController,
   IController: _controllers.IController,
+  ApiError: _helpers.ApiError,
+  statusCodes: _helpers.statusCodes,
   PopApi: _PopApi2.default,
   utils
-};
+}; // Import the necessary modules.
+
 exports.Cli = _middleware.Cli;
 exports.Database = _middleware.Database;
 exports.HttpServer = _middleware.HttpServer;
@@ -44,5 +48,7 @@ exports.BaseContentController = _controllers.BaseContentController;
 exports.ContentService = _controllers.ContentService;
 exports.IContentController = _controllers.IContentController;
 exports.IController = _controllers.IController;
+exports.ApiError = _helpers.ApiError;
+exports.statusCodes = _helpers.statusCodes;
 exports.PopApi = _PopApi2.default;
 exports.utils = utils;
