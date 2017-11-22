@@ -11,7 +11,7 @@ import { logger as ExpressWinston } from 'express-winston'
  * @external {Winston} https://github.com/winstonjs/winston
  */
 import {
-  createLogger as Winston,
+  loggers as Winston,
   format,
   transports
 } from 'winston'
@@ -90,30 +90,18 @@ export default class Logger {
 
   /**
    * Get the color of the output based on the log level.
-   * @param {?string} [level] - The log level.
+   * @param {?string} [level=info] - The log level.
    * @returns {string} - A color based on the log level.
    */
-  _getLevelColor(level?: string): string {
-    let color = '\x1b[36m'
-    switch (level) {
-      case 'error':
-        color = '\x1b[31m'
-        break
-      case 'warn':
-        color = '\x1b[33m'
-        break
-      case 'info':
-        color = '\x1b[36m'
-        break
-      case 'debug':
-        color = '\x1b[34m'
-        break
-      default:
-        color = '\x1b[36m'
-        break
+  _getLevelColor(level: string = 'info'): string {
+    const colors = {
+      error: '\x1b[31m',
+      warn: '\x1b[33m',
+      info: '\x1b[36m',
+      debug: '\x1b[34m'
     }
 
-    return color
+    return colors[level]
   }
 
   /**
@@ -122,16 +110,16 @@ export default class Logger {
    * @returns {string} - The formatted message.
    */
   _consoleFormatter(args: Object): string {
-    const newArgs = this._checkEmptyMessage(args)
-    const color = this._getLevelColor(newArgs.level)
+    const { level, message } = this._checkEmptyMessage(args)
+    const color = this._getLevelColor(level)
 
     return sprintf(
       `\x1b[0m[%s] ${color}%5s:\x1b[0m %2s/%d: \x1b[36m%s\x1b[0m`,
       new Date().toISOString(),
-      newArgs.level.toUpperCase(),
+      level.toUpperCase(),
       this._name,
       process.pid,
-      newArgs.message
+      message
     )
   }
 
@@ -141,46 +129,49 @@ export default class Logger {
    * @returns {string} - The formatted message.
    */
   _fileFormatter(args: Object): string {
-    const newArgs = this._checkEmptyMessage(args)
+    const { level, message } = this._checkEmptyMessage(args)
     return JSON.stringify({
       name: this._name,
       pid: process.pid,
-      level: newArgs.level,
-      msg: newArgs.message,
+      level,
+      msg: message,
       time: new Date().toISOString()
     })
   }
 
   /**
    * Create a Winston instance.
+   * @param {!string} suffix - The suffix for the log file.
    * @param {?boolean} [pretty] - Pretty mode for output with colors.
    * @returns {Winston} - A configured Winston object.
    */
-  _createWinston(pretty?: boolean): Winston {
+  _createWinston(suffix: string, pretty?: boolean): Winston {
     const { Console, File } = transports
-
     const f = pretty
       ? format.printf(this._consoleFormatter.bind(this))
       : format.simple()
+    const id = `${this._name}-${suffix}`
 
-    return Winston({
+    return Winston.add(id, {
       levels: this._levels,
+      level: 'debug',
+      exitOnError: false,
       transports: [
         new Console({
           name: this._name,
           format: f
         }),
         new File({
+          level: 'warn',
           filename: join(...[
             this._logDir,
-            `${this._name}.log`
+            `${id}.log`
           ]),
           format: format.printf(this._fileFormatter.bind(this)),
           maxsize: 5242880,
           handleExceptions: true
         })
-      ],
-      exitOnError: false
+      ]
     })
   }
 
@@ -190,8 +181,9 @@ export default class Logger {
    * @returns {ExpressWinston} - A configured Express Winston object.
    */
   _createExpressWinston(pretty?: boolean): ExpressWinston {
-    return new ExpressWinston({
-      winstonInstance: this._createWinston(pretty),
+    const winstonInstance = this._createWinston('express', pretty)
+    return ExpressWinston({
+      winstonInstance,
       statusLevels: true
     })
   }
@@ -204,14 +196,13 @@ export default class Logger {
    * @returns {Object} - A configured logger.
    */
   _createLogger(pretty?: boolean, quiet?: boolean): Object {
-    const logger = {}
+    const logger = this._createWinston('app', pretty)
 
-    const winston = this._createWinston(pretty)
-    Object.keys(this._levels).map(level => {
-      logger[level] = quiet
-        ? () => {}
-        : winston[level].bind(winston)
-    })
+    if (quiet) {
+      Object.keys(this._levels).map(level => {
+        logger[level] = () => {}
+      })
+    }
 
     return logger
   }
