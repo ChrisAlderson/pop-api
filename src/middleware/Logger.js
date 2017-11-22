@@ -1,17 +1,18 @@
 // Import the necessary modules.
 // @flow
-import { join } from 'path'
 /**
  * express.js middleware for winstonjs
  * @external {ExpressWinston} https://github.com/bithavoc/express-winston
  */
-import { logger as ExpressWinston } from 'express-winston'
+import expressWinston from 'express-winston'
+import { join } from 'path'
 /**
  * a multi-transport async logging library for node.js
  * @external {Winston} https://github.com/winstonjs/winston
  */
 import {
-  loggers as Winston,
+  type createLogger as Winston,
+  loggers,
   format,
   transports
 } from 'winston'
@@ -72,7 +73,9 @@ export default class Logger {
     this._logDir = logDir
 
     global.logger = this._getLogger('winston', pretty, quiet)
-    PopApi.expressLogger = this._getLogger('express', pretty, quiet)
+    if (process.env.NODE_ENV !== 'test') {
+      PopApi.expressLogger = this._getLogger('express', pretty, quiet)
+    }
   }
 
   /**
@@ -140,37 +143,55 @@ export default class Logger {
   }
 
   /**
+   * Create a Winston Console transport.
+   * @param {?boolean} [pretty] - Pretty mode for output with colors.
+   * @returns {Object} - A configured Winston Console transport.
+   */
+  _getConsoleTransport(pretty?: boolean): Object {
+    const f = pretty
+      ? format.printf(this._consoleFormatter.bind(this))
+      : format.simple()
+
+    return new transports.Console({
+      name: this._name,
+      format: f
+    })
+  }
+
+  /**
+   * Create a Winston File tranport.
+   * @param {!string} file - The file to log the output to.
+   * @returns {Object} - A configured Winston File transport.
+   */
+  _getFileTransport(file: string): Object {
+    return new transports.File({
+      level: 'warn',
+      filename: join(...[
+        this._logDir,
+        `${file}.log`
+      ]),
+      format: format.printf(this._fileFormatter.bind(this)),
+      maxsize: 5242880,
+      handleExceptions: true
+    })
+  }
+
+  /**
    * Create a Winston instance.
    * @param {!string} suffix - The suffix for the log file.
    * @param {?boolean} [pretty] - Pretty mode for output with colors.
    * @returns {Winston} - A configured Winston object.
    */
   _createWinston(suffix: string, pretty?: boolean): Winston {
-    const { Console, File } = transports
-    const f = pretty
-      ? format.printf(this._consoleFormatter.bind(this))
-      : format.simple()
     const id = `${this._name}-${suffix}`
 
-    return Winston.add(id, {
+    return loggers.add(id, {
       levels: this._levels,
       level: 'debug',
       exitOnError: false,
       transports: [
-        new Console({
-          name: this._name,
-          format: f
-        }),
-        new File({
-          level: 'warn',
-          filename: join(...[
-            this._logDir,
-            `${id}.log`
-          ]),
-          format: format.printf(this._fileFormatter.bind(this)),
-          maxsize: 5242880,
-          handleExceptions: true
-        })
+        this._getConsoleTransport(pretty),
+        this._getFileTransport(id)
       ]
     })
   }
@@ -180,10 +201,24 @@ export default class Logger {
    * @param {?boolean} [pretty] - Pretty mode for output with colors.
    * @returns {ExpressWinston} - A configured Express Winston object.
    */
-  _createExpressWinston(pretty?: boolean): ExpressWinston {
+  _createExpressWinston(pretty?: boolean): expressWinston {
     const winstonInstance = this._createWinston('express', pretty)
-    return ExpressWinston({
+
+    if (process.env.NODE_ENV === 'development') {
+      const { Console } = transports
+      winstonInstance.add(new Console({
+        name: this._name,
+        format: format.json({ space: 2 })
+      }))
+
+      expressWinston.requestWhitelist.push('body')
+      expressWinston.responseWhitelist.push('body')
+    }
+
+    return expressWinston.logger({
       winstonInstance,
+      meta: true,
+      msg: 'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
       statusLevels: true
     })
   }
@@ -193,9 +228,9 @@ export default class Logger {
    * Logger class.
    * @param {?boolean} [pretty] - Pretty mode for output with colors.
    * @param {?boolean} [quiet] - No output.
-   * @returns {Object} - A configured logger.
+   * @returns {Winston|Object} - A configured logger.
    */
-  _createLogger(pretty?: boolean, quiet?: boolean): Object {
+  _createLogger(pretty?: boolean, quiet?: boolean): Object | Winston {
     const logger = this._createWinston('app', pretty)
 
     if (quiet) {
@@ -218,7 +253,7 @@ export default class Logger {
     type?: string,
     pretty?: boolean,
     quiet?: boolean
-  ): ExpressWinston | void {
+  ): expressWinston | Object | Winston {
     if (!type) {
       return undefined
     }
