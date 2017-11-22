@@ -51,7 +51,7 @@ export default class ExampleController extends BaseContentController {
   getHello(req: $Request, res: $Response, next: NextFunction): $Response {
     const { name } = req.params
     return res.json({
-      msg: `Hello, ${name}`
+      message: `Hello, ${name}`
     })
   }
 
