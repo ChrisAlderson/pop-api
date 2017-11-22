@@ -5,6 +5,7 @@
  * @external {Express} https://github.com/expressjs/express
  */
 import express, { type $Application } from 'express'
+import { isMaster } from 'cluster'
 import { join } from 'path'
 
 import {
@@ -84,7 +85,9 @@ export default class PopApi {
       '..',
       'tmp'
     ])
-    await utils.createTemp(logDir)
+    if (isMaster) {
+      await utils.createTemp(logDir)
+    }
 
     PopApi.use(Cli, {
       argv: process.argv,
@@ -99,7 +102,6 @@ export default class PopApi {
       quiet,
       ...PopApi.loggerArgs
     }
-    PopApi.use(Logger, loggerOpts)
     PopApi.use(Logger, loggerOpts)
     PopApi.use(Database, {
       database: name,

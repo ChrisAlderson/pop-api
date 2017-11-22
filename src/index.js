@@ -42,5 +42,3 @@ export {
   PopApi,
   utils
 }
-
-// export expose
