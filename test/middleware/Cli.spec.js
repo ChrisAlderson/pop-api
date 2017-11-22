@@ -78,7 +78,7 @@ describe('Cli', () => {
   /** @test {Cli#getHelp} */
   it('should get the help message', () => {
     const val = cli.getHelp()
-    expect(val).to.be.a('string')
+    expect(val).to.be.an('array')
   })
 
   /** @test {Cli#printHelp} */

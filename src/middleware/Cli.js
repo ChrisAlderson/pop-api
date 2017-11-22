@@ -70,16 +70,16 @@ export default class Cli {
 
   /**
    * Get the help message.
-   * @returns {string} - The help message to print.
+   * @returns {Array<string>} - The help message to print.
    */
-  getHelp(): string {
+  getHelp(): Array<string> {
     return [
       '',
       '  Examples:',
       '',
       `    $ ${this._name} -m <pretty|quiet|ugly>`,
       `    $ ${this._name} --mode <pretty|quiet|ugly>`
-    ].join('\n')
+    ]
   }
 
   /**
@@ -87,7 +87,7 @@ export default class Cli {
    * @returns {undefined}
    */
   printHelp(): void {
-    console.info(`${this.getHelp()}\n`)
+    console.info(`${this.getHelp().join('\n')}\n`)
   }
 
   /**

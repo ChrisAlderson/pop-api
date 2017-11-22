@@ -29,11 +29,11 @@ class Cli {
   }
 
   getHelp() {
-    return ['', '  Examples:', '', `    $ ${this._name} -m <pretty|quiet|ugly>`, `    $ ${this._name} --mode <pretty|quiet|ugly>`].join('\n');
+    return ['', '  Examples:', '', `    $ ${this._name} -m <pretty|quiet|ugly>`, `    $ ${this._name} --mode <pretty|quiet|ugly>`];
   }
 
   printHelp() {
-    console.info(`${this.getHelp()}\n`);
+    console.info(`${this.getHelp().join('\n')}\n`);
   }
 
   _mode(m) {
