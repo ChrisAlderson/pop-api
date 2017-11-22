@@ -47,7 +47,7 @@ export default class Cli {
     this._name = name
 
     this.initOptions(version)
-    this.program.on('--help', this.help.bind(this))
+    this.program.on('--help', this.printHelp.bind(this))
 
     if (argv) {
       this._run(PopApi, argv)
@@ -69,14 +69,25 @@ export default class Cli {
   }
 
   /**
+   * Get the help message.
+   * @returns {string} - The help message to print.
+   */
+  getHelp(): string {
+    return [
+      '',
+      '  Examples:',
+      '',
+      `    $ ${this._name} -m <pretty|quiet|ugly>`,
+      `    $ ${this._name} --mode <pretty|quiet|ugly>`
+    ].join('\n')
+  }
+
+  /**
    * Method for displaying the --help option
    * @returns {undefined}
    */
-  help(): void {
-    console.info()
-    console.info('  Examples:\n')
-    console.info(`    $ ${this._name} -m <pretty|quiet|ugly>`)
-    console.info(`    $ ${this._name} --mode <pretty|quiet|ugly>`)
+  printHelp(): void {
+    console.info(`${this.getHelp()}\n`)
   }
 
   /**

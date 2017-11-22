@@ -75,9 +75,15 @@ describe('Cli', () => {
     expect(val).to.be.an('object')
   })
 
-  /** @test {Cli#help} */
+  /** @test {Cli#getHelp} */
+  it('should get the help message', () => {
+    const val = cli.getHelp()
+    expect(val).to.be.a('string')
+  })
+
+  /** @test {Cli#printHelp} */
   it('should print the --help option', () => {
-    const val = cli.help()
+    const val = cli.printHelp()
     expect(val).to.be.undefined
   })
 
