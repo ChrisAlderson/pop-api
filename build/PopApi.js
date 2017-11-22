@@ -10,6 +10,8 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
+var _cluster = require('cluster');
+
 var _path = require('path');
 
 var _middleware = require('./middleware');
@@ -38,7 +40,9 @@ class PopApi {
   }) {
     const { app } = PopApi;
     const logDir = (0, _path.join)(...[__dirname, '..', 'tmp']);
-    await utils.createTemp(logDir);
+    if (_cluster.isMaster) {
+      await utils.createTemp(logDir);
+    }
 
     PopApi.use(_middleware.Cli, {
       argv: process.argv,
@@ -52,7 +56,6 @@ class PopApi {
       pretty,
       quiet
     }, PopApi.loggerArgs);
-    PopApi.use(_middleware.Logger, loggerOpts);
     PopApi.use(_middleware.Logger, loggerOpts);
     PopApi.use(_middleware.Database, {
       database: name,

@@ -37,81 +37,73 @@ class Logger {
     return args;
   }
 
-  _getLevelColor(level) {
-    let color = '\x1b[36m';
-    switch (level) {
-      case 'error':
-        color = '\x1b[31m';
-        break;
-      case 'warn':
-        color = '\x1b[33m';
-        break;
-      case 'info':
-        color = '\x1b[36m';
-        break;
-      case 'debug':
-        color = '\x1b[34m';
-        break;
-      default:
-        color = '\x1b[36m';
-        break;
-    }
+  _getLevelColor(level = 'info') {
+    const colors = {
+      error: '\x1b[31m',
+      warn: '\x1b[33m',
+      info: '\x1b[36m',
+      debug: '\x1b[34m'
+    };
 
-    return color;
+    return colors[level];
   }
 
   _consoleFormatter(args) {
-    const newArgs = this._checkEmptyMessage(args);
-    const color = this._getLevelColor(newArgs.level);
+    const { level, message } = this._checkEmptyMessage(args);
+    const color = this._getLevelColor(level);
 
-    return (0, _sprintfJs.sprintf)(`\x1b[0m[%s] ${color}%5s:\x1b[0m %2s/%d: \x1b[36m%s\x1b[0m`, new Date().toISOString(), newArgs.level.toUpperCase(), this._name, process.pid, newArgs.message);
+    return (0, _sprintfJs.sprintf)(`\x1b[0m[%s] ${color}%5s:\x1b[0m %2s/%d: \x1b[36m%s\x1b[0m`, new Date().toISOString(), level.toUpperCase(), this._name, process.pid, message);
   }
 
   _fileFormatter(args) {
-    const newArgs = this._checkEmptyMessage(args);
+    const { level, message } = this._checkEmptyMessage(args);
     return JSON.stringify({
       name: this._name,
       pid: process.pid,
-      level: newArgs.level,
-      msg: newArgs.message,
+      level,
+      msg: message,
       time: new Date().toISOString()
     });
   }
 
-  _createWinston(pretty) {
+  _createWinston(suffix, pretty) {
     const { Console, File } = _winston.transports;
-
     const f = pretty ? _winston.format.printf(this._consoleFormatter.bind(this)) : _winston.format.simple();
+    const id = `${this._name}-${suffix}`;
 
-    return (0, _winston.createLogger)({
+    return _winston.loggers.add(id, {
       levels: this._levels,
+      level: 'debug',
+      exitOnError: false,
       transports: [new Console({
         name: this._name,
         format: f
       }), new File({
-        filename: (0, _path.join)(...[this._logDir, `${this._name}.log`]),
+        level: 'warn',
+        filename: (0, _path.join)(...[this._logDir, `${id}.log`]),
         format: _winston.format.printf(this._fileFormatter.bind(this)),
         maxsize: 5242880,
         handleExceptions: true
-      })],
-      exitOnError: false
+      })]
     });
   }
 
   _createExpressWinston(pretty) {
-    return new _expressWinston.logger({
-      winstonInstance: this._createWinston(pretty),
+    const winstonInstance = this._createWinston('express', pretty);
+    return (0, _expressWinston.logger)({
+      winstonInstance,
       statusLevels: true
     });
   }
 
   _createLogger(pretty, quiet) {
-    const logger = {};
+    const logger = this._createWinston('app', pretty);
 
-    const winston = this._createWinston(pretty);
-    Object.keys(this._levels).map(level => {
-      logger[level] = quiet ? () => {} : winston[level].bind(winston);
-    });
+    if (quiet) {
+      Object.keys(this._levels).map(level => {
+        logger[level] = () => {};
+      });
+    }
 
     return logger;
   }

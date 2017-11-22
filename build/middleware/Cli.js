@@ -17,7 +17,7 @@ class Cli {
     this._name = name;
 
     this.initOptions(version);
-    this.program.on('--help', this.help.bind(this));
+    this.program.on('--help', this.printHelp.bind(this));
 
     if (argv) {
       this._run(PopApi, argv);
@@ -28,11 +28,12 @@ class Cli {
     return this.program.version(`${this._name} v${version}`).option('-m, --mode <type>', 'Run the API in a particular mode.', /^(pretty|quiet|ugly)$/i);
   }
 
-  help() {
-    console.info();
-    console.info('  Examples:\n');
-    console.info(`    $ ${this._name} -m <pretty|quiet|ugly>`);
-    console.info(`    $ ${this._name} --mode <pretty|quiet|ugly>`);
+  getHelp() {
+    return ['', '  Examples:', '', `    $ ${this._name} -m <pretty|quiet|ugly>`, `    $ ${this._name} --mode <pretty|quiet|ugly>`].join('\n');
+  }
+
+  printHelp() {
+    console.info(`${this.getHelp()}\n`);
   }
 
   _mode(m) {
