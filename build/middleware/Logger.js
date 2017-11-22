@@ -4,13 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _path = require('path');
-
 var _expressWinston = require('express-winston');
+
+var _expressWinston2 = _interopRequireDefault(_expressWinston);
+
+var _path = require('path');
 
 var _winston = require('winston');
 
 var _sprintfJs = require('sprintf-js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class Logger {
   constructor(PopApi, { name, logDir, pretty, quiet }) {
@@ -26,7 +30,9 @@ class Logger {
     this._logDir = logDir;
 
     global.logger = this._getLogger('winston', pretty, quiet);
-    PopApi.expressLogger = this._getLogger('express', pretty, quiet);
+    if (process.env.NODE_ENV !== 'test') {
+      PopApi.expressLogger = this._getLogger('express', pretty, quiet);
+    }
   }
 
   _checkEmptyMessage(args) {
@@ -66,32 +72,54 @@ class Logger {
     });
   }
 
-  _createWinston(suffix, pretty) {
-    const { Console, File } = _winston.transports;
+  _getConsoleTransport(pretty) {
     const f = pretty ? _winston.format.printf(this._consoleFormatter.bind(this)) : _winston.format.simple();
+
+    return new _winston.transports.Console({
+      name: this._name,
+      format: f
+    });
+  }
+
+  _getFileTransport(file) {
+    return new _winston.transports.File({
+      level: 'warn',
+      filename: (0, _path.join)(...[this._logDir, `${file}.log`]),
+      format: _winston.format.printf(this._fileFormatter.bind(this)),
+      maxsize: 5242880,
+      handleExceptions: true
+    });
+  }
+
+  _createWinston(suffix, pretty) {
     const id = `${this._name}-${suffix}`;
 
     return _winston.loggers.add(id, {
       levels: this._levels,
       level: 'debug',
       exitOnError: false,
-      transports: [new Console({
-        name: this._name,
-        format: f
-      }), new File({
-        level: 'warn',
-        filename: (0, _path.join)(...[this._logDir, `${id}.log`]),
-        format: _winston.format.printf(this._fileFormatter.bind(this)),
-        maxsize: 5242880,
-        handleExceptions: true
-      })]
+      transports: [this._getConsoleTransport(pretty), this._getFileTransport(id)]
     });
   }
 
   _createExpressWinston(pretty) {
     const winstonInstance = this._createWinston('express', pretty);
-    return (0, _expressWinston.logger)({
+
+    if (process.env.NODE_ENV === 'development') {
+      const { Console } = _winston.transports;
+      winstonInstance.add(new Console({
+        name: this._name,
+        format: _winston.format.json({ space: 2 })
+      }));
+
+      _expressWinston2.default.requestWhitelist.push('body');
+      _expressWinston2.default.responseWhitelist.push('body');
+    }
+
+    return _expressWinston2.default.logger({
       winstonInstance,
+      meta: true,
+      msg: 'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
       statusLevels: true
     });
   }
