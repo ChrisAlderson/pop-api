@@ -65,7 +65,7 @@ export default class Routes {
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
    * @param {!Function} next - The ExpressJS next function.
-   * @returns {undefined}
+   * @returns {ApiError} - The converted error.
    */
   _convertErrors(
     err: Error,
@@ -88,7 +88,7 @@ export default class Routes {
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
    * @param {!Function} next - The ExpressJS next function.
-   * @returns {undefined}
+   * @returns {ApiError} - A standard 404 error.
    */
   _setNotFoundHandler(
     req: $Request,
@@ -109,7 +109,7 @@ export default class Routes {
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
    * @param {!Function} next - The ExpressJS next function.
-   * @returns {undefined}
+   * @returns {Object} - The error object.
    */
   _setErrorHandler(
     err: ApiError,
