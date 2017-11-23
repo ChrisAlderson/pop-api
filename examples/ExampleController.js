@@ -56,7 +56,7 @@ export default class ExampleController extends BaseContentController {
   }
 
   /**
-   * Throw an error on purpose as a demonstraction.
+   * Throw an error on purpose as a demonstration.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
    * @param {!Function} next - The ExpressJS next function.
@@ -69,7 +69,7 @@ export default class ExampleController extends BaseContentController {
   }
 
   /**
-   * Throw a custom error on purpose as a demonstraction.
+   * Throw a custom error on purpose as a demonstration.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
    * @param {!Function} next - The ExpressJS next function.

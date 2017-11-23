@@ -165,7 +165,7 @@ describe('Logger', () => {
   })
 
   /** @test {Logger#_createExpressWinston} */
-  it('should create a configured ExpressWinston instance with developer outpu', () => {
+  it('should create a configured ExpressWinston instance with developer output', () => {
     const stub = sinon.stub(process.env, 'NODE_ENV')
     stub.value('development')
 

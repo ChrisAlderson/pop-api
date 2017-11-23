@@ -34,7 +34,7 @@ export default class ApiError extends Error {
   isPublic: boolean
 
   /**
-   * Whenever the errror is operational or not
+   * Whenever the error is operational or not
    * @type {boolean}
    */
   isOperational: boolean
@@ -75,7 +75,7 @@ export default class ApiError extends Error {
      */
     this.isPublic = isPublic
     /**
-     * Whenever the errror is operational or not
+     * Whenever the error is operational or not
      * @type {boolean}
      */
     this.isOperational = true

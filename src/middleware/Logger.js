@@ -159,7 +159,7 @@ export default class Logger {
   }
 
   /**
-   * Create a Winston File tranport.
+   * Create a Winston File transport.
    * @param {!string} file - The file to log the output to.
    * @returns {Object} - A configured Winston File transport.
    */

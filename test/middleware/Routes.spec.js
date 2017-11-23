@@ -110,7 +110,7 @@ describe('Routes', () => {
    */
   function testErrorHandler(env: string): void {
     /** @test {routes#_setErrorHandler} */
-    it('should catch a 500 internal server error with a cutom error', done => {
+    it('should catch a 500 internal server error with a custom error', done => {
       const stub = sinon.stub(process, 'env')
       stub.value({
         NODE_ENV: env

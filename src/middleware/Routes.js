@@ -134,7 +134,7 @@ export default class Routes {
   }
 
   /**
-   * Add security sentitive headers.
+   * Add security sensitive headers.
    * @see https://github.com/shieldfy/API-Security-Checklist#output
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
@@ -150,7 +150,7 @@ export default class Routes {
   }
 
   /**
-   * Remove security sentitive headers.
+   * Remove security sensitive headers.
    * @see https://github.com/shieldfy/API-Security-Checklist#output
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
