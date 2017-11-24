@@ -173,7 +173,7 @@ describe('Routes', () => {
       type: 'express'
     })
 
-    routes._setupExpress(exp, PopApi.expressLogger)
+    routes._setupExpress(exp, PopApi)
     expect(express).to.not.equal(express())
   })
 

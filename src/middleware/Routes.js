@@ -10,7 +10,6 @@ import express, {
 } from 'express'
 import responseTime from 'response-time'
 import { STATUS_CODES as statusMessages } from 'http'
-import type { logger as ExpressWinston } from 'express-winston'
 
 import {
   ApiError,
@@ -31,7 +30,7 @@ export default class Routes {
    * @param {?Array<Object>} options.controllers - The controllers to register.
    */
   constructor(PopApi: any, {app, controllers}: Object): void {
-    this._setupExpress(app, PopApi, controllers, PopApi.expressLogger)
+    this._setupExpress(app, PopApi, controllers)
 
     PopApi.app = app
   }
@@ -170,14 +169,12 @@ export default class Routes {
    * @param {!Express} app - The ExpressJS instance.
    * @param {!PopApi} PopApi - The PopApi instance to bind the routes to.
    * @param {!Array<Object>} controllers - The controllers to register.
-   * @param {!ExpressWinston} [logger] - Pretty output with Winston logging.
    * @returns {undefined}
    */
   _setupExpress(
     app: $Application,
     PopApi?: any,
-    controllers?: Array<Object>,
-    logger?: ExpressWinston
+    controllers?: Array<Object>
   ): void {
     // Enable parsing URL encoded bodies.
     app.use(bodyParser.urlencoded({
@@ -198,8 +195,8 @@ export default class Routes {
     app.use(responseTime())
 
     // Enable HTTP request logging.
-    if (logger) {
-      app.use(logger)
+    if (PopApi && PopApi.expressLogger) {
+      app.use(PopApi.expressLogger)
     }
 
     // Set and remove the security sensitive headers.
