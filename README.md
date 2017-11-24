@@ -21,7 +21,7 @@ project, but can also be used for other purposes by using middleware.
    - Security middleware
  - Interface for registering routes for `express`.
  - DAL class for standard CRUD operations.
- - Route controller to handle routes for your content. 
+ - Route controller to handle routes for your content.
 
 ## Installation
 
@@ -44,9 +44,9 @@ object from the contructor.
 
 ```js
 // ./MyRouteController.js
-import { IContentController } from 'pop-api' 
+import { IContentController } from 'pop-api'
 
-// Extend your route controller from the 'IController' interface. 
+// Extend your route controller from the 'IController' interface.
 export default class MyRouteController extends IController {
 
   // The constructor takes an object as the parameter.
@@ -56,8 +56,8 @@ export default class MyRouteController extends IController {
     this.name = name
   }
 
-  // Implement the 'registerRoutes' method from the 'IController interface. 
-  registerRoutes(router, PopApi): void {
+  // Implement the 'registerRoutes' method from the 'IController interface.
+  registerRoutes(router, PopApi) {
     router.get('/hello', this.getHello.bind(this))
   }
 
@@ -105,11 +105,11 @@ import { name, version } from './package.json'
 })()
 ```
 
-### Advanded setup 
+### Advanded setup
 
-**TODO:** Add example route controller with model, contetservice, 
+**TODO:** Add example route controller with model, contetservice,
 basecontentcontroller and 'init' method with more options.
- 
+
 ## API
 
  - [Cli](#cli)
@@ -124,21 +124,133 @@ basecontentcontroller and 'init' method with more options.
 
 **TODO:** Document Cli constructor options and input options.
 
+```js
+import PopApi,  {
+  Cli,
+  Logger
+} from 'pop-api'
+import { name, version } from './package.json'
+
+const cliOpts = {
+  name,                  // The name of your application
+  version,               // The version of your application
+  argv: process.argv     // The arguments to parse
+}
+PopApi.use(Cli, cliOpts)
+
+// Parsed the input given and bindsnds options for the `Logger` middleware.
+// See the documentation for the `Logger` middleware for more options.
+const { pretty, quiet } = PopApi.loggerArgs
+PopApi.use(Logger, {
+  pretty,
+  quiet
+})
+```
+
 ### Database
 
-**TODO:** Document Database constructor options. 
+**TODO:** Document Database constructor options.
+
+```
+# .env
+# (Optional) Assuming you use the `dotenv` modules to get your username and password
+# for the database connection
+DATABASE_USERNAME=myUsername
+DATABASE_PASSWORD=myPassowrd
+```
+
+```js
+// (Optional) Assuming you use the `dotenv` modules to get your username and password
+// for the database connection
+import 'dotenv/config'
+import PopApi, { Database } from 'pop-api'
+import { name } from './package.json'
+
+const databaseOptss = {
+  database: name,                             // The name of the database.
+  hosts: ['localhost'],                       // A lst of hosts to connect to.
+  port: 27017,                                // (Optional) The port of MongoDb.
+  username: process.env.DATABASE_USERNAME,    // (Optional) The username to connect to the hosts.
+  password: process.env.DATABASE_PASSWORD     // (Optional) The password to connect to the hosts.
+}
+PopApi.use(Database, databaseOpts)
+
+// The database middleware can now be used to connect to the MongoDb database.
+PopApi.database.connect()
+  .then(() => {
+   // Connection successful!  
+  })
+  .catch(err => {
+    // Handle error
+  })
+```
 
 ### HttpServer
 
 **TODO:** Document HttpServer contructor options.
 
+```js
+import PopApi, { HttpServer } from 'pop-api'
+
+const httpServerOpts = {
+  app: PopApi.app,    // The express instance from PopApi.
+  port: 5000,         // The port your API will be running on.
+  workers: 2          // The amount of workers to fork.
+}
+PopApi.use(HttpServer, httpServerOpts)
+// Doesn't bind anyting to the PopApi instance, just forks the workers and makes
+// the app listen on your configured port.
+```
+
 ### Logger
 
 **TODO:** Document Logger constructor options.
 
+```js
+import PopApi, { Logger } from 'pop-api'
+import { join } from 'path'
+import { name } from './package.json'
+
+const loggerOpts = {
+  name,                                     // The name of the log file.
+  logDir: join(...[__basedir, 'tmp']),      // The directory to store the logs in.
+  pretty: true,                             // (Optional) Pretty output mode.
+  quiet: false                              // (Optonal) Quiet mode for no output.
+}
+PopApi.use(Logger, loggerOpts)
+
+logger.info('\logger\' will be a global object')
+// Other log leves you can use are:
+//  - logger.debug()
+//  - logger.info()
+//  - logger.warn()
+//  - logger.error()
+
+// Log middleware for logging routes, used bt the `Routes` middleware, or set
+// it yourself.
+const { expressLogger } = PopApi
+PopApi.app.use(expressLogger)
+```
+
 ### Routes
 
 **TODO:** Document Routes constructor options.
+
+```js
+import PopApi, { Routes } from 'pop-api'
+import MyRouteController from './MyRouteController'
+
+const routesOpts = {
+  app: PopApi.app,                   // The express instance from PopApi.
+  controllers: [{                    // A list of controllers to register.
+    Controller: MyRouteController,   // The controlelr you want to register.
+    args: {}                         // The arguments to pass down to the Controller.
+  }]
+}
+PopApi.use(Routes, routesOpts)
+// Doesn't bind anything to the PopApi instance, just configures the middleware
+// for express.
+```
 
 ### Custom Middleware
 
@@ -152,7 +264,7 @@ middleware class which will only hold a simple greeting.
 export default class MyMiddleware {
 
   // The first parameter will be the 'PopApi' instance, the second will be an
-  // object you can use to configure your middleware. 
+  // object you can use to configure your middleware.
   constructor(PopApi, {name}) {
     this.name = name
 
