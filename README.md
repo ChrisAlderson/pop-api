@@ -40,7 +40,7 @@ implement the `registerRoutes` method which will be called during the setup.
 The route controller below will be created with a constructor which takes an
 object as the parameter. This example will register a `GET /hello` route and
 sends a JSON object as a response with a greeting to the name provided by the
-object from the contructor.
+object from the constructor.
 
 ```js
 // ./MyRouteController.js
@@ -105,10 +105,10 @@ import { name, version } from './package.json'
 })()
 ```
 
-### Advanded setup
+### Advanced setup
 
-**TODO:** Add example route controller with model, contetservice,
-basecontentcontroller and 'init' method with more options.
+**TODO:** Add example route controller with model, ContentService,
+BaseContentController and 'init' method with more options.
 
 ## API
 
@@ -138,7 +138,7 @@ const cliOpts = {
 }
 PopApi.use(Cli, cliOpts)
 
-// Parsed the input given and bindsnds options for the `Logger` middleware.
+// Parsed the input given and binds options for the `Logger` middleware.
 // See the documentation for the `Logger` middleware for more options.
 const { pretty, quiet } = PopApi.loggerArgs
 PopApi.use(Logger, {
@@ -166,7 +166,7 @@ import 'dotenv/config'
 import PopApi, { Database } from 'pop-api'
 import { name } from './package.json'
 
-const databaseOptss = {
+const databaseOpts = {
   database: name,                             // The name of the database.
   hosts: ['localhost'],                       // A lst of hosts to connect to.
   port: 27017,                                // (Optional) The port of MongoDb.
@@ -187,7 +187,7 @@ PopApi.database.connect()
 
 ### HttpServer
 
-**TODO:** Document HttpServer contructor options.
+**TODO:** Document HttpServer constructor options.
 
 ```js
 import PopApi, { HttpServer } from 'pop-api'
@@ -198,7 +198,7 @@ const httpServerOpts = {
   workers: 2          // The amount of workers to fork.
 }
 PopApi.use(HttpServer, httpServerOpts)
-// Doesn't bind anyting to the PopApi instance, just forks the workers and makes
+// Doesn't bind anything to the PopApi instance, just forks the workers and makes
 // the app listen on your configured port.
 ```
 
@@ -215,12 +215,12 @@ const loggerOpts = {
   name,                                     // The name of the log file.
   logDir: join(...[__basedir, 'tmp']),      // The directory to store the logs in.
   pretty: true,                             // (Optional) Pretty output mode.
-  quiet: false                              // (Optonal) Quiet mode for no output.
+  quiet: false                              // (Optional) Quiet mode for no output.
 }
 PopApi.use(Logger, loggerOpts)
 
 logger.info('\logger\' will be a global object')
-// Other log leves you can use are:
+// Other log levels you can use are:
 //  - logger.debug()
 //  - logger.info()
 //  - logger.warn()
@@ -243,7 +243,7 @@ import MyRouteController from './MyRouteController'
 const routesOpts = {
   app: PopApi.app,                   // The express instance from PopApi.
   controllers: [{                    // A list of controllers to register.
-    Controller: MyRouteController,   // The controlelr you want to register.
+    Controller: MyRouteController,   // The controller you want to register.
     args: {}                         // The arguments to pass down to the Controller.
   }]
 }
@@ -255,7 +255,7 @@ PopApi.use(Routes, routesOpts)
 ### Custom Middleware
 
 The `init` method will register the default Cli, Database, Logger, Routes and
-Server middlewares, but you can also extends the functionality of `pop-api` by
+Server middleware, but you can also extends the functionality of `pop-api` by
 using your own middleware. In the middleware example below we create a
 middleware class which will only hold a simple greeting.
 
@@ -292,7 +292,7 @@ PopApi.use(MyMiddleware, {
   name: 'John'
 })
 
-// The middleware will be bound to the 'PopApi' isntance.
+// The middleware will be bound to the 'PopApi' instance.
 const greeting = PopApi.myMiddleware // Hello, John
 ```
 

@@ -60,11 +60,11 @@ export default class ExampleController extends BaseContentController {
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
    * @param {!Function} next - The ExpressJS next function.
-   * @throws {Error} - An error occured!
+   * @throws {Error} - An error occurred!
    * @returns {Error} - A demonstration error.
    */
   getError(req: $Request, res: $Response, next: NextFunction): mixed {
-    const err = new Error('An error occured!')
+    const err = new Error('An error occurred!')
     return next(err)
   }
 
@@ -73,12 +73,12 @@ export default class ExampleController extends BaseContentController {
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
    * @param {!Function} next - The ExpressJS next function.
-   * @throws {Error} - A custom error occured!
+   * @throws {Error} - A custom error occurred!
    * @returns {Error} - A demonstration error.
    */
   getCustomError(req: $Request, res: $Response, next: NextFunction): mixed {
     const err = new ApiError({
-      message: 'A custom error occured!',
+      message: 'A custom error occurred!',
       status: statusCodes.INTERNAL_SERVER_ERROR,
       isPublic: true
     })
