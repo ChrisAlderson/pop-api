@@ -28,7 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 class Routes {
   constructor(PopApi, { app, controllers }) {
-    this._setupExpress(app, PopApi, controllers, PopApi.expressLogger);
+    this._setupExpress(app, PopApi, controllers);
 
     PopApi.app = app;
   }
@@ -94,7 +94,7 @@ class Routes {
     return next();
   }
 
-  _setupExpress(app, PopApi, controllers, logger) {
+  _setupExpress(app, PopApi, controllers) {
     app.use(_bodyParser2.default.urlencoded({
       extended: true
     }));
@@ -109,8 +109,8 @@ class Routes {
 
     app.use((0, _responseTime2.default)());
 
-    if (logger) {
-      app.use(logger);
+    if (PopApi && PopApi.expressLogger) {
+      app.use(PopApi.expressLogger);
     }
 
     app.use(this._addSecHeaders);

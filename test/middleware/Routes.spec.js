@@ -1,10 +1,10 @@
 // Import the necessary modules.
-/* eslint-disable no-unused-expressions */
-import chai, { expect } from 'chai'
-import chaiHttp from 'chai-http'
 // @flow
+/* eslint-disable no-unused-expressions */
+import { expect } from 'chai'
 import express, { type $Application } from 'express'
 import sinon from 'sinon'
+import supertest from 'supertest'
 import { join } from 'path'
 
 import {
@@ -39,12 +39,16 @@ describe('Routes', () => {
   let routes: Routes
 
   /**
+   * The supertest object to test with.
+   * @type {Object}
+   */
+  let request: Object
+
+  /**
    * Hook for setting up the Routes tests.
    * @type {Function}
    */
   before(() => {
-    chai.use(chaiHttp)
-
     app = express()
     controllers = [{
       Controller: ExampleController,
@@ -68,6 +72,7 @@ describe('Routes', () => {
       app,
       controllers
     })
+    request = supertest(app)
   })
 
   /** @test {Routes#constructor} */
@@ -85,22 +90,18 @@ describe('Routes', () => {
 
   /** @test {Routes#_convertErrors} */
   it('should catch a 500 internal server error with a default error', done => {
-    chai.request(app).get('/error')
-      .then(done)
-      .catch(err => {
-        expect(err).to.have.status(500)
-        done()
-      })
+    request.get('/error')
+      .expect(500)
+      .then(() => done())
+      .catch(done)
   })
 
   /** @test {routes#_setNotFoundHandler} */
   it('should catch a 404 not found error', done => {
-    chai.request(app).get('/not-found')
-      .then(done)
-      .catch(err => {
-        expect(err).to.have.status(404)
-        done()
-      })
+    request.get('/not-found')
+      .expect(404)
+      .then(() => done())
+      .catch(done)
   })
 
   /**
@@ -116,15 +117,13 @@ describe('Routes', () => {
         NODE_ENV: env
       })
 
-      chai.request(app).get('/custom-error').then(res => {
-        stub.restore()
-        done(res)
-      }).catch(err => {
-        expect(err).to.have.status(500)
-        stub.restore()
-
-        done()
-      })
+      request.get('/custom-error')
+        .expect(500)
+        .then(() => {
+          stub.restore()
+          done()
+        })
+        .catch(done)
     })
   }
 
@@ -133,29 +132,26 @@ describe('Routes', () => {
 
   /** @test {Routes#_addSecHeaders} */
   it('should add the security headers', done => {
-    chai.request(app).get('/hello/world').then(res => {
-      expect(res).to.have.status(200)
-      expect(res).to.have.header('X-Content-Type-Options', 'no-sniff')
-      expect(res).to.have.header('X-Frame-Options', 'deny')
-      expect(res).to.have.header(
-        'Content-Security-Policy',
-        'default-src: \'none\''
-      )
-
-      done()
-    }).catch(done)
+    request.get('/hello/world')
+      .expect(200)
+      .expect('X-Content-Type-Options', 'no-sniff')
+      .expect('X-Frame-Options', 'deny')
+      .expect('Content-Security-Policy', 'default-src: \'none\'')
+      .then(() => done())
+      .catch(done)
   })
 
   /** @test {Routes#_removeSecHeaders} */
   it('should remove the security headers', done => {
-    chai.request(app).get('/hello/world').then(res => {
-      expect(res).to.have.status(200)
-      expect(res).to.not.have.header('X-Powered-By')
-      expect(res).to.not.have.header('X-AspNet-Version')
-      expect(res).to.not.have.header('Server')
-
-      done()
-    }).catch(done)
+    request.get('/hello/world')
+      .expect(200)
+      .expect(res => {
+        expect(res.headers['x-powered-by']).to.be.undefined
+        expect(res.headers['x-aspnet-version']).to.be.undefined
+        expect(res.headers['server']).to.be.undefined
+      })
+      .then(() => done())
+      .catch(done)
   })
 
   /** @test {Routes#_setupExpress} */
