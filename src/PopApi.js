@@ -53,8 +53,6 @@ export default class PopApi {
    * @param {!Array<Object>} options.controllers - The controllers to register.
    * @param {!string} options.name - The name for your API.
    * @param {!string} options.version - The version of your API.
-   * @param {?boolean} [options.pretty] - Pretty logging output.
-   * @param {?boolean} [options.quiet] - No logging output.
    * @param {?Array<string>} [options.hosts=['localhost']] - The hosts of
    * the database cluster.
    * @param {?number} [options.dbPort=27017] - The port the database is on.
@@ -70,8 +68,6 @@ export default class PopApi {
     controllers,
     name,
     version,
-    pretty,
-    quiet,
     hosts = ['localhost'],
     dbPort = 27017,
     username,
@@ -98,8 +94,6 @@ export default class PopApi {
     const loggerOpts = {
       name,
       logDir,
-      pretty,
-      quiet,
       ...PopApi.loggerArgs
     }
     PopApi.use(Logger, loggerOpts)
