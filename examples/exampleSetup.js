@@ -22,19 +22,18 @@ import {
   version
 } from '../package'
 
+// Create a new service object for the `ExampleController`.
+const service = new ContentService({
+  Model: ExampleModel,
+  basePath: 'example',
+  projection: { name: 1 },
+  query: {}
+})
+
 // Create a controllers array with the controllers to register.
 const controllers = [{
   Controller: ExampleController,
-  args: {
-    service: new ContentService({
-      Model: ExampleModel,
-      itemType: 'example',
-      projection: {
-        name: 1
-      },
-      query: {}
-    })
-  }
+  args: { service }
 }]
 
 /**
