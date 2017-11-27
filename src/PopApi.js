@@ -18,6 +18,16 @@ import {
 import * as utils from './utils'
 
 /**
+ * The default log directory.
+ * @type {string}
+ */
+const defaultLogDir = join(...[
+  __dirname,
+  '..',
+  'tmp'
+])
+
+/**
  * The PopApi class with the middleware pattern.
  * @type {PopApi}
  */
@@ -53,6 +63,7 @@ export default class PopApi {
    * @param {!Array<Object>} options.controllers - The controllers to register.
    * @param {!string} options.name - The name for your API.
    * @param {!string} options.version - The version of your API.
+   * @param {?string} options.logDir - The directory to store the log files in.
    * @param {?Array<string>} [options.hosts=['localhost']] - The hosts of
    * the database cluster.
    * @param {?number} [options.dbPort=27017] - The port the database is on.
@@ -68,6 +79,7 @@ export default class PopApi {
     controllers,
     name,
     version,
+    logDir = defaultLogDir,
     hosts = ['localhost'],
     dbPort = 27017,
     username,
@@ -76,11 +88,6 @@ export default class PopApi {
     workers = 2
   }: Object): Promise<Object | Error> {
     const { app } = PopApi
-    const logDir = join(...[
-      __dirname,
-      '..',
-      'tmp'
-    ])
     if (isMaster) {
       await utils.createTemp(logDir)
     }
