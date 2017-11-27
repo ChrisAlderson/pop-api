@@ -46,7 +46,7 @@ export default class BaseContentController extends IContentController {
    * @returns {undefined}
    */
   registerRoutes(router: any, PopApi?: any): void {
-    const t = this._service.itemType
+    const t = this._service.basePath
 
     router.get(`/${t}s`, this.getContents.bind(this))
     router.get(`/${t}s/:page`, this.getPage.bind(this))

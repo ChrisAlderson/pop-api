@@ -71,11 +71,10 @@ describe('BaseContentController', () => {
     baseContentController = new BaseContentController({
       service: new ContentService({
         Model: ExampleModel,
-        itemType: content,
+        basePath: content,
         projection: {
           name: 1
-        },
-        query: {}
+        }
       })
     })
     baseContentController.registerRoutes(app)
