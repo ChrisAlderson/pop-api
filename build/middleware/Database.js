@@ -59,7 +59,6 @@ class Database {
   }
 
   exportCollection(collection, outputFile) {
-
     const args = ['-d', this._database, '-c', `${collection}s`, '-o', outputFile];
     return (0, _utils.executeCommand)('mongoexport', args);
   }

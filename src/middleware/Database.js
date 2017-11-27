@@ -123,7 +123,6 @@ export default class Database {
     collection: string,
     outputFile: string
   ): Promise<string | void> {
-
     const args = [
       '-d', this._database,
       '-c', `${collection}s`,
