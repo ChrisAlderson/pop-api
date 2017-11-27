@@ -170,7 +170,7 @@ describe('BaseContentController', () => {
      */
     function testOkResponse(request: Object, done: Function): void {
       request.expect(200)
-        .set('Content', 'applciation/json')
+        .set('Content', 'application/json')
         .then(() => done())
         .catch(done)
     }
@@ -253,7 +253,7 @@ describe('BaseContentController', () => {
       stub: Object | null = null
     ): void {
       request.expect(500)
-        .set('Content', 'applciation/json')
+        .set('Content', 'application/json')
         .then(() => {
           if (stub) {
             stub.restore()

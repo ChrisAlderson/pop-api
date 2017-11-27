@@ -38,7 +38,7 @@ export default class ContentService {
   query: Object
 
   /**
-   * The base pathof the service.
+   * The base path of the service.
    * @type {string}
    */
   basePath: string
@@ -47,7 +47,7 @@ export default class ContentService {
    * Create a new ContentService.
    * @param {!Object} options - The options for the content service.
    * @param {!MongooseModel} options.Model - The model of the service.
-   * @param {!string} options.basePath- The base path of the service.
+   * @param {!string} options.basePath - The base path of the service.
    * @param {!Object} options.projection - The projection of the service.
    * @param {!Object} options.query={} - The query of the service.
    * @param {!number} [options.pageSize=25] - The page size of the service.
@@ -80,7 +80,7 @@ export default class ContentService {
      */
     this.query = query
     /**
-     * The base pathof the service.
+     * The base path of the service.
      * @type {string}
      */
     this.basePath = basePath
