@@ -10,8 +10,9 @@ it. Use it at your own risk.
 
 ## Features
 
-The pop-api project aims to provide the core modules for the [`popcorn-api`](https://github.com/popcorn-official/popcorn-api)
-project, but can also be used for other purposes by using middleware.
+The pop-api project aims to provide the core modules for the
+[`popcorn-api`](https://github.com/popcorn-official/popcorn-api) project, but
+can also be used for other purposes by using middleware.
  - Cli middleware for reading user input with [`commander.js`](https://github.com/js/commander.js).
  - Database middleware for connection to MongoDb through [`mongoose`](https://github.com/Automattic/mongoose).
  - Logging of routes and other information using [`winston`](https://github.com/winstonjs/winston).
@@ -61,7 +62,7 @@ export default class MyRouteController extends IController {
     router.get('/hello', this.getHello.bind(this))
   }
 
-  // Router middleware to execute on the 'GET /hello/' route.
+  // Router middleware to execute on the 'GET /hello' route.
   getHello(req, res, next) {
     return res.json({
       message: `Hello, ${this.name}`
@@ -86,18 +87,20 @@ import { name, version } from './package.json'
   try {
     // Define the controllers you want to use.
     const controllers = [{
-      Controller: MyRouteController,
-      args: {
-        name: 'John'
+      Controller: MyRouteController,  // The controller to register.
+      args: {                         // The arguments passed down to the
+        name: 'John'                  // The additional arguments to pass to
+                                      // your route controller.
       }
     }]
 
-    await PopApi.init({
-      controllers,
-      name,
-      version
+    // Initiate your API with the necessary parameters.
+    await PopApi.init({                
+      controllers,                    // The controllers to register.
+      name,                           // The name of your API.
+      version                         // The version of your API.
     })
-    // Api is available on port 5000.
+    // API is available on port 5000.
     // http://localhost:5000/hello -> { message: 'Hello, John' }
   } catch (err) {
     console.log(error)
@@ -114,6 +117,7 @@ BaseContentController and 'init' method with more options.
 // ./MyModel.js
 import mongoose, { Schema } from 'mongoose'
 
+// Create a simple mongoose schema.
 const mySchema =  new Schema({
   _id: {
     type: String,
@@ -132,6 +136,7 @@ const mySchema =  new Schema({
   }
 })
 
+// Create a model from the schema.
 export default mongoose.model('MyModel', mySchema)
 ```
 
@@ -143,22 +148,26 @@ import { BaseContentConroller } from 'pop-api'
 // operations.
 export default class MyRouteController extends BaseContentController {
 
-  // The constructor .
-  const({service, name}) {
+  // The constructor of `BaseContentConroller` needs an instance of
+  // `ContentService` which we will create later. It can also take additional
+  // parameters for your own implementation.
+  constructor({service, name}) {
     super({service})
 
     this.name = name
   }
 
+  // Implement the 'registerRoutes' method from the 'IController interface.
   registerRoutes(router, PopApi) {
     // Call the `registerRoutes` method from the `BaseContentController` class
     // to register the default routes.
     super.registerRoutes(router, PopApi)
 
-    // And add aditional routes for your route controller. 
+    // And add additional routes for your route controller.
     router.get('/hello', this.getHello.bind(this))
   }
 
+  // Router middleware to execute on the 'GET /hello' route.
   getHello(req, res, next) {
     return res.json({
       message: `Hello, ${this.name}`
@@ -171,7 +180,7 @@ export default class MyRouteController extends BaseContentController {
 ```js
 // ./index.js
 import PopApi, { ContentService } from 'pop-api'
-import MyModel from './MyModel' 
+import MyModel from './MyModel'
 import MyRouteController from './MyRouteController'
 import { name, version } from './package.json'
 
@@ -180,27 +189,34 @@ import { name, version } from './package.json'
     // Create a new service object for the `MyRouteController`.
     const myService = new ContentService({
       Model: MyModel,           // The model for the service.
-      itemType: 'example',      // The base path to register the routes to. 
+      basePath: 'example',      // The base path to register the routes to.
       projection: { name: 1 },  // Projection used to display multiple items.
-      query: {}                 // The default query to fetch items. 
+      query: {}                 // (Optional) The default query to fetch items.
     })
 
     // Define the controllers you want to use.
     const controllers = [{
-      Controller: MyRouteController,  // The controller to register. 
+      Controller: MyRouteController,  // The controller to register.
       args: {                         // The arguments passed down to the
                                       // constructor of the controller.
-        service,                      // The content service for the
+        service: myService,           // The content service for the
                                       // BaseContentController.
         name: 'John'                  // The additional arguments to pass to
                                       // your route controller.
       }
     }]
 
+    // Initiate your API with optional parameters.
     await PopApi.init({
-      controllers,             // The controllers to register. 
+      controllers,             // The controllers to register.
       name,                    // The name of your API.
       version,                 // The version of your API.
+      logDir: join(...[        // (Optional) The directory to store the log
+                               // files in. Defaults to `./tmp`.
+        __basedir,
+        '..',
+        'tmp'
+      ]),
       hosts: ['11.11.11.11'],  // (Optional) The hosts to connect to for
                                // MongoDb. Defaults to `['localhost']`.
       dbPort: 27019,           // (Optional) The port of MongoDb to connect to
@@ -214,7 +230,7 @@ import { name, version } from './package.json'
       workers: 4               // The amount of workers to fork for the server.
                                // Defaults to `2`.
     })
-    // Api is available on port 8080.
+    // API is available on port 8080.
     // http://localhost:8080/hello -> { message: 'Hello, John' }
   } catch (err) {
     console.log(error)
@@ -272,18 +288,20 @@ export and import a collection with the
 `importCollection(collection, jsonFile)` methods. The example below uses a
 `.env` file to store the optional `username` and `password` values to establish
 a connection with MongoDb.
- 
+
 ```dosini
 # .env
-# (Optional) Assuming you use the `dotenv` modules to get your username and password
-# for the database connection
+# (Optional) Assuming you use the `dotenv` modules to get your username and
+# password for the database connection
 DATABASE_USERNAME=myUsername
 DATABASE_PASSWORD=myPassword
 ```
 
+Now setup the `Database` middleware:
+
 ```js
-// (Optional) Assuming you use the `dotenv` modules to get your username and password
-// for the database connection
+// (Optional) Assuming you use the `dotenv` modules to get your username and
+// password for the database connection
 import 'dotenv/config'
 import PopApi, { Database } from 'pop-api'
 import MyModel from './MyModel'
@@ -293,8 +311,10 @@ const databaseOpts = {
   database: name,                             // The name of the database.
   hosts: ['localhost'],                       // A lst of hosts to connect to.
   port: 27017,                                // (Optional) The port of MongoDb.
-  username: process.env.DATABASE_USERNAME,    // (Optional) The username to connect to the hosts.
-  password: process.env.DATABASE_PASSWORD     // (Optional) The password to connect to the hosts.
+  username: process.env.DATABASE_USERNAME,    // (Optional) The username to
+                                              // connect to the hosts.
+  password: process.env.DATABASE_PASSWORD     // (Optional) The password to
+                                              // connect to the hosts.
 }
 PopApi.use(Database, databaseOpts)
 
@@ -317,7 +337,9 @@ PopApi.database.connect()
 
 ### HttpServer
 
-**TODO:** Document HttpServer constructor options.
+The `HttpServer` middleware forks workers so heavy load process can run on
+different child processes. It also makes the
+ [`express`](https://github.com/expressjs/express) app listen on a port.
 
 ```js
 import PopApi, { HttpServer } from 'pop-api'
@@ -328,17 +350,18 @@ const httpServerOpts = {
   workers: 2          // The amount of workers to fork.
 }
 PopApi.use(HttpServer, httpServerOpts)
-// Doesn't bind anything to the PopApi instance, just forks the workers and makes
-// the app listen on your configured port.
+// Doesn't bind anything to the PopApi instance, just forks the workers and
+// makes the app listen on your configured port.
 ```
 
 ### Logger
 
-The `Logger` middleware uses the [`winston`](https://github.com/winstonjs/winston)
-module to create a global `logger` object. This `logger` object has various
-levels to log, such as `debug`, `info`, `warn` and `error`. This middleware
-also binds an [`express`](https://github.com/expressjs/express) middleware
-function to log the routes. 
+The `Logger` middleware uses the
+[`winston`](https://github.com/winstonjs/winston) module to create a global
+`logger` object. This `logger` object has various levels to log, such as
+`debug`, `info`, `warn` and `error`. This middleware also binds an
+[`express`](https://github.com/expressjs/express) middleware function to log
+the routes.
 
 ```js
 import PopApi, { Logger } from 'pop-api'
@@ -346,10 +369,10 @@ import { join } from 'path'
 import { name } from './package.json'
 
 const loggerOpts = {
-  name,                                     // The name of the log file.
-  logDir: join(...[__basedir, 'tmp']),      // The directory to store the logs in.
-  pretty: true,                             // (Optional) Pretty output mode.
-  quiet: false                              // (Optional) Quiet mode for no output.
+  name,                                 // The name of the log file.
+  logDir: join(...[__basedir, 'tmp']),  // The directory to store the logs in.
+  pretty: true,                         // (Optional) Pretty output mode.
+  quiet: false                          // (Optional) Quiet mode for no output.
 }
 PopApi.use(Logger, loggerOpts)
 
@@ -368,11 +391,12 @@ PopApi.app.use(expressLogger)
 
 ### Routes
 
-The `Routes` middleware configures the [`express`](https://github.com/expressjs/express)
-instance. It sets up the [`body-parser`](https://github.com/expressjs/body-parser)
-and [`compression`](https://github.com/exprssjs/compression) middleware, as
-well as the error and security middleware. Thirdly it registers the controllers
-with their routes.
+The `Routes` middleware configures the
+[`express`](https://github.com/expressjs/express) instance. It sets up the
+[`body-parser`](https://github.com/expressjs/body-parser) and
+[`compression`](https://github.com/exprssjs/compression) middleware, as well as
+the error and security middleware. Thirdly it registers the controllers with
+their routes.
 
 ```js
 import PopApi, { Routes } from 'pop-api'
@@ -382,7 +406,8 @@ const routesOpts = {
   app: PopApi.app,                   // The express instance from PopApi.
   controllers: [{                    // A list of controllers to register.
     Controller: MyRouteController,   // The controller you want to register.
-    args: {}                         // The arguments to pass down to the Controller.
+    args: {}                         // The arguments to pass down to the
+                                     // MyRouteController.
   }]
 }
 PopApi.use(Routes, routesOpts)
