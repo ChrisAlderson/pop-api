@@ -107,7 +107,7 @@ import { name, version } from './package.json'
 
 ### Advanced setup
 
-For the advanded setup we will create a model using
+For the advanced setup we will create a model using
 [`mongoose`](https://github.com/Automattic/mongoose) and a route controller
 extending from `BaseContentController`. Below we create a simple
 [`mongoose`](https://github.com/Atomattic/mongoose) model.
@@ -184,7 +184,7 @@ path will be taken from the `ContentService`):
  - DELETE `/example/:id`     Delete a model.
  - GET    `/random/example`  Get a random model.
 
-The following example extends from `BaseContentConroler`, registers the default
+The following example extends from `BaseContentController`, registers the default
 routes and implements a `GET /hello` route.
 
 ```js
@@ -396,7 +396,7 @@ PopApi.database.connect()
   .catch(err => {
     // Handle error
   })
-  .then({
+  .then(() => {
     // Disconnect from MongoDB.
     PopApi.database.disconnect()
   })
