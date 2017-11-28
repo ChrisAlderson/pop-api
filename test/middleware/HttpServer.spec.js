@@ -76,8 +76,8 @@ describe('HttpServer', () => {
 
   /** @test {HttpServer#constructor} */
   it('should check the attributes of the Server', () => {
-    expect(httpServer._port).to.exist
-    expect(httpServer._port).to.be.a('number')
+    expect(httpServer._serverPort).to.exist
+    expect(httpServer._serverPort).to.be.a('number')
     expect(httpServer._server).to.exist
     expect(httpServer._server).to.be.an('object')
     expect(httpServer._workers).to.exist

@@ -109,12 +109,12 @@ export default class PopApi {
       hosts,
       username,
       password,
-      port: dbPort
+      dbPort
     })
     PopApi.use(HttpServer, {
       app,
       workers,
-      port: serverPort
+      serverPort
     })
     PopApi.use(Routes, {
       app,

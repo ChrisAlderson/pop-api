@@ -86,8 +86,8 @@ describe('Database', () => {
 
     expect(database._database).to.exist
     expect(database._database).to.be.a('string')
-    expect(database._port).to.exist
-    expect(database._port).to.be.a('number')
+    expect(database._dbPort).to.exist
+    expect(database._dbPort).to.be.a('number')
     expect(database._username).to.exist
     expect(database._username).to.be.a('string')
     expect(database._password).to.exist

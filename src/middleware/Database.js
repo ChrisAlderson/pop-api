@@ -32,7 +32,7 @@ export default class Database {
    * The port of the database. Default is `27017`.
    * @type {string}
    */
-  _port: number
+  _dbPort: number
 
   /**
    * The username of the database. DBy default this is left empty.
@@ -53,7 +53,7 @@ export default class Database {
    * @param {!string} options.database - The arguments to be parsed by
    * @param {!Array<string>} [options.hosts=['localhost']] - The hosts for the
    * MongoDb connection.
-   * @param {!number} [options.port=27017] - The port for the MongoDb
+   * @param {!number} [options.dbPort=27017] - The port for the MongoDb
    * connection.
    * @param {?string} [options.username=''] - The username for the MongoDB
    * connection.
@@ -63,7 +63,7 @@ export default class Database {
   constructor(PopApi: any, {
     database,
     hosts = ['localhost'],
-    port = 27017,
+    dbPort = 27017,
     username = '',
     password = ''
   }: Object): void {
@@ -79,7 +79,7 @@ export default class Database {
     this._hosts = MONGO_PORT_27017_TCP_ADDR
       ? [MONGO_PORT_27017_TCP_ADDR]
       : hosts
-    this._port = Number(MONGO_PORT_27017_TCP_PORT) || port
+    this._dbPort = Number(MONGO_PORT_27017_TCP_PORT) || dbPort
     this._username = username
     this._password = password
 
@@ -95,7 +95,7 @@ export default class Database {
     if (this._username && this._password) {
       uri += `${this._username}:${this._password}@`
     }
-    uri += `${this._hosts.join(',')}:${this._port}/${this._database}`
+    uri += `${this._hosts.join(',')}:${this._dbPort}/${this._database}`
 
     mongoose.Promise = global.Promise
     return mongoose.connect(uri, {
