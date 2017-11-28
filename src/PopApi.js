@@ -4,17 +4,28 @@
  * Fast, unopinionated, minimalist web framework for node.
  * @external {Express} https://github.com/expressjs/express
  */
-import Express, { type $Application } from 'express'
+import express, { type $Application } from 'express'
+import { isMaster } from 'cluster'
 import { join } from 'path'
 
 import {
   Cli,
   Database,
+  HttpServer,
   Logger,
-  Routes,
-  Server
+  Routes
 } from './middleware'
 import * as utils from './utils'
+
+/**
+ * The default log directory.
+ * @type {string}
+ */
+const defaultLogDir = join(...[
+  __dirname,
+  '..',
+  'tmp'
+])
 
 /**
  * The PopApi class with the middleware pattern.
@@ -26,7 +37,7 @@ export default class PopApi {
    * The Express instance for the PopApi framework.
    * @type {Express}
    */
-  static app: $Application = Express()
+  static app: $Application = express()
 
   /**
    * A map of the installed plugins.
@@ -38,7 +49,7 @@ export default class PopApi {
    * The database connection.
    * @type {Database}
    */
-  static connection: Database
+  static database: Database
 
   /**
    * The arguments passed down to the logger middleware.
@@ -52,79 +63,65 @@ export default class PopApi {
    * @param {!Array<Object>} options.controllers - The controllers to register.
    * @param {!string} options.name - The name for your API.
    * @param {!string} options.version - The version of your API.
-   * @param {?boolean} [options.pretty] - Pretty logging output.
-   * @param {?boolean} [options.quiet] - No logging output.
-   * @param {?Array<string>} [options.hosts] - The hosts of the database
-   * cluster.
-   * @param {?number} [options.dbPort] - The port the database is on.
+   * @param {?string} options.logDir - The directory to store the log files in.
+   * @param {?Array<string>} [options.hosts=['localhost']] - The hosts of
+   * the database cluster.
+   * @param {?number} [options.dbPort=27017] - The port the database is on.
    * @param {?string} [options.username] - The username for the database
    * connection.
    * @param {?string} [options.password] - The password for the database
    * connection.
    * @param {?number} [options.serverPort] - The port the API will run on.
-   * @param {?number} [options.workers] - The number of workers for the API.
-   * @returns {undefined}
+   * @param {?number} [options.workers=2] - The number of workers for the API.
+   * @returns {Promise<PopApi, Error>} - The initialized PopApi instance.
    */
   static async init({
     controllers,
     name,
     version,
-    pretty,
-    quiet,
+    logDir = defaultLogDir,
     hosts = ['localhost'],
     dbPort = 27017,
     username,
     password,
     serverPort = process.env.PORT,
     workers = 2
-  }: Object): Object {
+  }: Object): Promise<Object | Error> {
     const { app } = PopApi
-    const logDir = join(...[
-      __dirname,
-      '..',
-      'tmp'
-    ])
-    await utils.createTemp(logDir)
+    if (isMaster) {
+      await utils.createTemp(logDir)
+    }
 
     PopApi.use(Cli, {
       argv: process.argv,
       name,
       version
     })
-    PopApi.use(Logger, {
+
+    const loggerOpts = {
       name,
       logDir,
-      type: 'winston',
-      pretty,
-      quiet,
       ...PopApi.loggerArgs
-    })
-    PopApi.use(Logger, {
-      name,
-      logDir,
-      type: 'express',
-      pretty,
-      quiet,
-      ...PopApi.loggerArgs
-    })
+    }
+    PopApi.use(Logger, loggerOpts)
     PopApi.use(Database, {
       database: name,
       hosts,
       username,
       password,
-      port: dbPort
+      dbPort
     })
-    PopApi.use(Server, {
+    PopApi.use(HttpServer, {
       app,
       workers,
-      port: serverPort
+      serverPort
     })
     PopApi.use(Routes, {
       app,
       controllers
     })
 
-    await PopApi.connection.connectMongoDb()
+    await PopApi.database.connect()
 
     return PopApi
   }
@@ -137,18 +134,17 @@ export default class PopApi {
    * @returns {Promise<PopApi>} - The PopApi instance with the installed
    * plugins.
    */
-  static async use(Plugin: any, ...args: any): any {
-    const { name } = Plugin.constructor
-    if (PopApi._installedPlugins.has(name)) {
+  static use(Plugin: any, ...args: any): any {
+    if (PopApi._installedPlugins.has(Plugin)) {
       return this
     }
 
     const plugin = typeof Plugin === 'function'
-      ? await new Plugin(this, ...args)
+      ? new Plugin(this, ...args)
       : null
 
     if (plugin) {
-      PopApi._installedPlugins.set(name, plugin)
+      PopApi._installedPlugins.set(Plugin, plugin)
     }
 
     return this

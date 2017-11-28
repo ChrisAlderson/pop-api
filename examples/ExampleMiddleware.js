@@ -1,4 +1,5 @@
 // @flow
+
 /**
  * Example middleware to use with PopApi.
  * @type {ExampleMiddleware}
@@ -15,7 +16,7 @@ export default class ExampleMiddleware {
    * Create a new instance of the ExampleMiddleware class.
    * @param {!PopApi} PopApi - The PopApi instance.
    * @param {!Object} options - The options for the ExampleMiddleware.
-   * @param {!string} name - The name to greet.
+   * @param {!string} options.name - The name to greet.
    */
   constructor(PopApi: any, {name}: Object): void {
     /**

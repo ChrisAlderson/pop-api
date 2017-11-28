@@ -1,10 +1,11 @@
 // Import the necessary modules.
 // @flow
 import type {
-  $Application,
   $Response,
-  $Request
+  $Request,
+  NextFunction
 } from 'express'
+import type { MongooseModel } from 'mongoose'
 
 import IContentController from './IContentController'
 import type ContentService from './ContentService'
@@ -39,39 +40,54 @@ export default class BaseContentController extends IContentController {
   }
 
   /**
-   * Register the default methods to the default routes.
-   * @param {!Express} app - The express instance to register the routes to.
+   * Default method to register the routes.
+   * @param {!Object} router - The express router to register the routes to.
    * @param {?PopApi} [PopApi] - The PopApi instance.
-   * @throws {Error} - Using default method: 'registerRoutes'
    * @returns {undefined}
    */
-  registerRoutes(app: $Application, PopApi?: any): void {
-    const t = this._service.itemType
+  registerRoutes(router: any, PopApi?: any): void {
+    const t = this._service.basePath
 
-    app.get(`/${t}s`, this.getContents.bind(this))
-    app.get(`/${t}s/:page`, this.getPage.bind(this))
-    app.get(`/${t}/:id`, this.getContent.bind(this))
-    app.post(`/${t}s`, this.createContent.bind(this))
-    app.put(`/${t}/:id`, this.updateContent.bind(this))
-    app.delete(`/${t}/:id`, this.deleteContent.bind(this))
-    app.get(`/random/${t}`, this.getRandomContent.bind(this))
+    router.get(`/${t}s`, this.getContents.bind(this))
+    router.get(`/${t}s/:page`, this.getPage.bind(this))
+    router.get(`/${t}/:id`, this.getContent.bind(this))
+    router.post(`/${t}s`, this.createContent.bind(this))
+    router.put(`/${t}/:id`, this.updateContent.bind(this))
+    router.delete(`/${t}/:id`, this.deleteContent.bind(this))
+    router.get(`/random/${t}`, this.getRandomContent.bind(this))
+  }
+
+  /**
+   * Check if the content is empty or the length of the content array is zero.
+   * @param {!Object} res - The ExpressJS response object.
+   * @param {!Object|Array<Object>} content - The content to check.
+   * @returns {Object} - Returns a 204 response if the content is empty, or a
+   * 200 response with the content if it is not empty.
+   */
+  _checkEmptyContent(res: $Response, content: any): Object {
+    if (!content || content.length === 0) {
+      return res.status(204).json()
+    }
+
+    return res.json(content)
   }
 
   /**
    * Get all the available pages.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Array<string>, Object>} - A list of pages which are
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Array<string>, Error>} - A list of pages which are
    * available.
    */
-  getContents(req: $Request, res: $Response): Promise<Array<string> | Object> {
-    return this._service.getContents().then(content => {
-      if (content.length === 0) {
-        return res.status(204).json()
-      }
-
-      return res.json(content)
-    }).catch(err => res.status(500).json(err))
+  getContents(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<Array<string> | mixed> {
+    return this._service.getContents()
+      .then(content => this._checkEmptyContent(res, content))
+      .catch(err => next(err))
   }
 
   /**
@@ -90,90 +106,108 @@ export default class BaseContentController extends IContentController {
    * Get content from one page.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Array<Object>, Object>} - The content of one page.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Array<Object>, Error>} - The content of one page.
    */
-  getPage(req: $Request, res: $Response): Promise<Array<any> | Object> {
+  getPage(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<Array<MongooseModel> | mixed> {
     const { page } = req.params
     const { sort, order } = req.query
 
     const o = parseInt(order, 10) ? parseInt(order, 10) : -1
     const s = typeof sort === 'string' ? this.sortContent(sort, o) : null
 
-    return this._service.getPage(s, Number(page)).then(content => {
-      if (content.length === 0) {
-        return res.status(204).json()
-      }
-
-      return res.json(content)
-    }).catch(err => res.status(500).json(err))
+    return this._service.getPage(s, Number(page))
+      .then(content => this._checkEmptyContent(res, content))
+      .catch(err => next(err))
   }
 
   /**
    * Get a content item based on the id.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The details of a single content item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The details of a single content item.
    */
-  getContent(req: $Request, res: $Response): Promise<any> {
-    return this._service.getContent(req.params.id).then(content => {
-      if (!content) {
-        return res.status(204).json()
-      }
-
-      return res.json(content)
-    }).catch(err => res.status(500).json(err))
+  getContent(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<MongooseModel | mixed> {
+    return this._service.getContent(req.params.id)
+      .then(content => this._checkEmptyContent(res, content))
+      .catch(err => next(err))
   }
 
   /**
    * Create a new content item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The created content item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The created content item.
    */
-  createContent(req: $Request, res: $Response): Promise<any> {
+  createContent(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<MongooseModel | mixed> {
     return this._service.createContent(req.body)
       .then(content => res.json(content))
-      .catch(err => res.status(500).json(err))
+      .catch(err => next(err))
   }
 
   /**
    * Update the info of one content item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The updated content item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The updated content item.
    */
-  updateContent(req: $Request, res: $Response): Promise<any> {
+  updateContent(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<MongooseModel | mixed> {
     return this._service.updateContent(req.params.id, req.body)
       .then(content => res.json(content))
-      .catch(err => res.status(500).json(err))
+      .catch(err => next(err))
   }
 
   /**
    * Delete a content item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - The deleted content item
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - The deleted content item
    */
-  deleteContent(req: $Request, res: $Response): Promise<any> {
+  deleteContent(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<MongooseModel | mixed> {
     return this._service.deleteContent(req.params.id)
       .then(content => res.json(content))
-      .catch(err => res.status(500).json(err))
+      .catch(err => next(err))
   }
 
   /**
    * Get a random item.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
-   * @returns {Promise<Object, Object>} - A random item.
+   * @param {!Function} next - The ExpressJS next function.
+   * @returns {Promise<Object, Error>} - A random item.
    */
-  getRandomContent(req: $Request, res: $Response): Promise<any> {
-    return this._service.getRandomContent().then(content => {
-      if (!content) {
-        return res.status(204).json()
-      }
-
-      return res.json(content)
-    }).catch(err => res.status(500).json(err))
+  getRandomContent(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<MongooseModel | mixed> {
+    return this._service.getRandomContent()
+      .then(content => this._checkEmptyContent(res, content))
+      .catch(err => next(err))
   }
 
 }

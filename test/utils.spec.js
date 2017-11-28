@@ -5,7 +5,7 @@ import del from 'del'
 import { expect } from 'chai'
 import { join } from 'path'
 
-import * as utils from '../src/utils'
+import { utils } from '../src'
 
 describe('utils', () => {
   /**
@@ -44,13 +44,13 @@ describe('utils', () => {
   })
 
   /** @test {executeCommand} */
-  it('should succesfully execute a command', done => {
+  it('should successfully execute a command', done => {
     utils.executeCommand('git', [
       'rev-parse',
       '--short',
       'HEAD'
     ]).then(res => {
-      expect(res).to.be.undefined
+      expect(res).to.be.a('string')
       done()
     }).catch(done)
   })

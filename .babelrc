@@ -2,7 +2,7 @@
   "presets": [
     ["env", {
       "targets": {
-        "node": "6.10"
+        "node": "7.10.1"
       }
     }],
     "flow"

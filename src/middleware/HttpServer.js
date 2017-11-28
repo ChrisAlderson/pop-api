@@ -1,7 +1,7 @@
 // Import the necessary modules.
 // @flow
 import cluster from 'cluster'
-/** @external {http~Server} https://nodejs.org/dist/latest-v8.x/docs/api/http.html#http_class_http_server */
+/** @external {http~Server} https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_server */
 import http from 'http'
 import os from 'os'
 
@@ -14,17 +14,17 @@ import type Database from './Database'
 export default class HttpServer {
 
   /**
-   * The port on which the API will run on. Default is `5000`.
-   * @type {number}
-   */
-  _port: number
-
-  /**
-   * The http server object.
-   * @type {http~Server}
+   * the http server object.
+   * @type {http~server}
    * @see https://nodejs.org/api/http.html#http_http_createserver_requestlistener
    */
   _server: Server
+
+  /**
+   * The port on which the API will run on. Default is `5000`.
+   * @type {number}
+   */
+  _serverPort: number
 
   /**
    * The amount of workers on the cluster.
@@ -35,16 +35,31 @@ export default class HttpServer {
   /**
    * Create a new Server object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the server to.
-   * @param {!Ojbect} options - The options for the server.
+   * @param {!Object} options - The options for the server.
    * @param {!Express} options.app - The Express application.
+   * @param {!Express} [options.serverPort=process.env.PORT] - The port the
+   * API will run on.
+   * @param {!Express} [options.workers=2] - The amount of workers to fork.
    */
   constructor(PopApi: any, {
     app,
-    port = process.env.PORT,
+    serverPort = process.env.PORT,
     workers = 2
   }: Object): void {
-    this._port = port || 5000
+    /**
+     * The amount of workers on the cluster.
+     * @type {number}
+     */
     this._server = http.createServer(app)
+    /**
+     * The port on which the API will run on. Default is `5000`.
+     * @type {number}
+     */
+    this._serverPort = serverPort || 5000
+    /**
+     * The amount of workers on the cluster.
+     * @type {number}
+     */
     this._workers = workers
 
     this._setupApi(app)
@@ -85,23 +100,22 @@ export default class HttpServer {
       this._forkWorkers()
       this._workersOnExit()
 
-      logger.info(`API started on port: ${this._port}`)
+      logger.info(`API started on port: ${this._serverPort}`)
     } else {
-      app.listen(this._port)
+      app.listen(this._serverPort)
     }
   }
 
   /**
    * Method to stop the API from running.
-   * @param {Database} connection - The database connection to close.
-   * @param {Function} done - function to exit the API.
+   * @param {!Database} database - The database connection to close.
+   * @param {?Function} [done=() => {}] - function to exit the API.
    * @returns {undefined}
    */
-  closeApi(connection: Database, done: Function = () => {}): void {
+  closeApi(database: Database, done: Function = () => {}): void {
     this._server.close(() => {
-      connection.disconnectMongoDb().then(() => {
+      database.disconnect().then(() => {
         logger.info('Closed out remaining connections.')
-
         done()
       })
     })

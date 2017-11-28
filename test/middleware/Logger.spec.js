@@ -1,11 +1,13 @@
 // Import the necessary modules.
 // @flow
 /* eslint-disable no-unused-expressions */
+import del from 'del'
 import mkdirp from 'mkdirp'
+import sinon from 'sinon'
 import { expect } from 'chai'
 import { join } from 'path'
 
-import Logger from '../../src/middleware/Logger'
+import { Logger } from '../../src'
 import { name } from '../../package'
 
 /** @test {Logger} */
@@ -46,6 +48,9 @@ describe('Logger', () => {
 
   /** @test {Logger#constructor} */
   it('should create an ExpressWinston instance', () => {
+    const stub = sinon.stub(process.env, 'NODE_ENV')
+    stub.value('development')
+
     const logger = new Logger({}, {
       name,
       logDir,
@@ -54,18 +59,8 @@ describe('Logger', () => {
       quiet: false
     })
     expect(logger).to.be.an('object')
-  })
 
-  /** @test {Logger#constructor} */
-  it('should throw an error when giving an invalid type', () => {
-    try {
-      new Logger({}, { // eslint-disable-line no-new
-        name,
-        type: ''
-      })
-    } catch (err) {
-      expect(err).to.be.an('Error')
-    }
+    stub.restore()
   })
 
   /** @test {Logger#constructor} */
@@ -134,6 +129,18 @@ describe('Logger', () => {
     expect(logger._fileFormatter({})).to.be.a('string')
   })
 
+  /** @test {Logger#_getConsoleTransport} */
+  it('should get a configured winston console transport', () => {
+    const transport = logger._getConsoleTransport()
+    expect(transport).to.be.an('object')
+  })
+
+  /** @test {Logger#_getFileTransport} */
+  it('should get a configured winston file transport', () => {
+    const transport = logger._getFileTransport('winston')
+    expect(transport).to.be.an('object')
+  })
+
   /** @test {Logger#_createWinston} */
   it('should create a configured winston instance', () => {
     const logy = logger._createWinston()
@@ -157,6 +164,17 @@ describe('Logger', () => {
     expect(logy).to.be.a('function')
   })
 
+  /** @test {Logger#_createExpressWinston} */
+  it('should create a configured ExpressWinston instance with developer output', () => {
+    const stub = sinon.stub(process.env, 'NODE_ENV')
+    stub.value('development')
+
+    const logy = logger._createExpressWinston()
+    expect(logy).to.be.a('function')
+
+    stub.restore()
+  })
+
   /** @test {Logger#_createLogger} */
   it('should create the global logger object', () => {
     let val = logger._createLogger(true, true)
@@ -164,7 +182,6 @@ describe('Logger', () => {
 
     val = logger._createLogger(false, false)
     expect(val).to.be.an('object')
-    global.logger.info()
 
     val = logger._createLogger(false, true)
     expect(val).to.be.an('object')
@@ -174,5 +191,13 @@ describe('Logger', () => {
   it('should not create an instance of ExpressWinston or Winston', () => {
     expect(logger._getLogger()).to.be.undefined
     expect(logger._getLogger('FAULTY')).to.be.undefined
+  })
+
+  /**
+   * Hook for tearing down the Logger tests.
+   * @type {Function}
+   */
+  after(() => {
+    del.sync([logDir])
   })
 })

@@ -4,7 +4,7 @@
 import sinon from 'sinon'
 import { expect } from 'chai'
 
-import Cli from '../../src/middleware/Cli'
+import { Cli } from '../../src'
 import {
   name,
   version
@@ -53,6 +53,15 @@ describe('Cli', () => {
   })
 
   /** @test {Cli#constructor} */
+  it('should create a new Cli instance without arguments to parse', () => {
+    const cli = new Cli({}, {
+      name,
+      version
+    })
+    expect(cli).to.be.an('object')
+  })
+
+  /** @test {Cli#constructor} */
   it('should check the attributes of the Cli', () => {
     expect(cli.program).to.exist
     expect(cli.program).to.be.an('object')
@@ -60,9 +69,21 @@ describe('Cli', () => {
     expect(cli._name).to.be.a('string')
   })
 
-  /** @test {Cli#help} */
+  /** @test {Cli#initOptions} */
+  it('should initiate the options for the Cli', () => {
+    const val = cli.initOptions(version)
+    expect(val).to.be.an('object')
+  })
+
+  /** @test {Cli#getHelp} */
+  it('should get the help message', () => {
+    const val = cli.getHelp()
+    expect(val).to.be.an('array')
+  })
+
+  /** @test {Cli#printHelp} */
   it('should print the --help option', () => {
-    const val = cli.help()
+    const val = cli.printHelp()
     expect(val).to.be.undefined
   })
 
@@ -86,7 +107,7 @@ describe('Cli', () => {
   it('should invoke no options and print the --help option', () => {
     const stub = sinon.stub(cli.program, 'outputHelp')
 
-    const val = cli._run(['', '', '--help'], {})
+    const val = cli._run({}, ['', '', '--help'])
     expect(val).to.be.undefined
 
     stub.restore()
@@ -103,6 +124,10 @@ describe('Cli', () => {
     stub.restore()
   })
 
+  /**
+   * Hook for tearing down the Cli tests.
+   * @type {Function}
+   */
   after(() => {
     error.restore()
     info.restore()
