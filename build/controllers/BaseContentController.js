@@ -18,7 +18,7 @@ class BaseContentController extends _IContentController2.default {
   }
 
   registerRoutes(router, PopApi) {
-    const t = this._service.itemType;
+    const t = this._service.basePath;
 
     router.get(`/${t}s`, this.getContents.bind(this));
     router.get(`/${t}s/:page`, this.getPage.bind(this));

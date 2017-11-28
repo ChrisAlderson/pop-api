@@ -24,13 +24,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const defaultLogDir = (0, _path.join)(...[__dirname, '..', 'tmp']);
+
 class PopApi {
   static async init({
     controllers,
     name,
     version,
-    pretty,
-    quiet,
+    logDir = defaultLogDir,
     hosts = ['localhost'],
     dbPort = 27017,
     username,
@@ -39,7 +40,6 @@ class PopApi {
     workers = 2
   }) {
     const { app } = PopApi;
-    const logDir = (0, _path.join)(...[__dirname, '..', 'tmp']);
     if (_cluster.isMaster) {
       await utils.createTemp(logDir);
     }
@@ -52,9 +52,7 @@ class PopApi {
 
     const loggerOpts = _extends({
       name,
-      logDir,
-      pretty,
-      quiet
+      logDir
     }, PopApi.loggerArgs);
     PopApi.use(_middleware.Logger, loggerOpts);
     PopApi.use(_middleware.Database, {

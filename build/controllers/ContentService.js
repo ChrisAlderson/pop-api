@@ -15,9 +15,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class ContentService {
   constructor({
     Model,
-    itemType,
+    basePath,
     projection,
-    query,
+    query = {},
     pageSize = 25
   }) {
     this.Model = Model;
@@ -28,7 +28,7 @@ class ContentService {
 
     this.query = query;
 
-    this.itemType = itemType;
+    this.basePath = basePath;
   }
 
   getContents(base = '/') {
@@ -37,7 +37,7 @@ class ContentService {
       const docs = [];
 
       for (let i = 1; i < pages + 1; i++) {
-        docs.push(`${base}${this.itemType}/${i}`);
+        docs.push(`${base}${this.basePath}/${i}`);
       }
 
       return docs;
