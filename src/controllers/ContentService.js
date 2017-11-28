@@ -1,6 +1,10 @@
 // Import the necessary modules.
 // @flow
 import pMap from 'p-map'
+/**
+ * MongoDB object modeling designed to work in an asynchronous environment.
+ * @external {MongooseModel} https://github.com/Automattic/mongoose
+ */
 import type { MongooseModel } from 'mongoose'
 
 /**
@@ -11,7 +15,7 @@ export default class ContentService {
 
   /**
    * The model of the service.
-   * @type {Model}
+   * @type {MongooseModel}
    */
   Model: MongooseModel
 
@@ -34,30 +38,30 @@ export default class ContentService {
   query: Object
 
   /**
-   * The item type of the service.
+   * The base path of the service.
    * @type {string}
    */
-  itemType: string
+  basePath: string
 
   /**
    * Create a new ContentService.
    * @param {!Object} options - The options for the content service.
-   * @param {!Model} options.Model - The model of the service.
-   * @param {!string} options.itemType - The item type of the service.
+   * @param {!MongooseModel} options.Model - The model of the service.
+   * @param {!string} options.basePath - The base path of the service.
    * @param {!Object} options.projection - The projection of the service.
-   * @param {!Object} options.query - The query of the service.
+   * @param {!Object} options.query={} - The query of the service.
    * @param {!number} [options.pageSize=25] - The page size of the service.
    */
   constructor({
     Model,
-    itemType,
+    basePath,
     projection,
-    query,
+    query = {},
     pageSize = 25
   }: Object): void {
     /**
      * The item type of the service.
-     * @type {Model}
+     * @type {MongooseModel}
      */
     this.Model = Model
     /**
@@ -76,10 +80,10 @@ export default class ContentService {
      */
     this.query = query
     /**
-     * The model of the servece.
+     * The base path of the service.
      * @type {string}
      */
-    this.itemType = itemType
+    this.basePath = basePath
   }
 
   /**
@@ -94,7 +98,7 @@ export default class ContentService {
       const docs = []
 
       for (let i = 1; i < pages + 1; i++) {
-        docs.push(`${base}${this.itemType}/${i}`)
+        docs.push(`${base}${this.basePath}/${i}`)
       }
 
       return docs
@@ -107,7 +111,7 @@ export default class ContentService {
    * @param {!number} [p=1] - The page to get.
    * @param {!Object} [query=this.query] - A copy of the query object to
    * get the objects.
-   * @returns {Promise<Array<Model>, Error>} - The content of one page.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The content of one page.
    */
   getPage(
     sort?: Object | null,
@@ -141,12 +145,6 @@ export default class ContentService {
       $limit: this.pageSize
     }]
 
-    if (sort) {
-      aggregateQuery = [{
-        $sort: sort
-      }, ...aggregateQuery]
-    }
-
     return this.Model.aggregate(aggregateQuery)
   }
 
@@ -154,7 +152,7 @@ export default class ContentService {
    * Get the content from the database with an id.
    * @param {!string} id - The id of the content to get.
    * @param {!Object} projection - The projection for the content.
-   * @returns {Promise<Model, Error>} - The details of the content.
+   * @returns {Promise<MongooseModel, Error>} - The details of the content.
    */
   getContent(id: string, projection?: Object): Promise<any> {
     return this.Model.findOne({
@@ -165,7 +163,7 @@ export default class ContentService {
   /**
    * Insert the content into the database.
    * @param {!Object} obj - The object to insert.
-   * @returns {Promise<Model, Error>} - The created content.
+   * @returns {Promise<MongooseModel, Error>} - The created content.
    */
   createContent(obj: Object): Promise<any> {
     return new this.Model(obj).save()
@@ -174,7 +172,7 @@ export default class ContentService {
   /**
    * Insert multiple content models into the database.
    * @param {!Array<Object>} arr - The array of content to insert.
-   * @returns {Promise<Array<Model>, Error>} - The inserted content.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The inserted content.
    */
   createMany(arr: Array<Object>): Promise<Array<any>> {
     return pMap(arr, async obj => {
@@ -194,7 +192,7 @@ export default class ContentService {
    * Update the content.
    * @param {!string} id - The id of the content to get.
    * @param {!Object} obj - The object to update.
-   * @returns {Promise<Model, Error>} - The updated content.
+   * @returns {Promise<MongooseModel, Error>} - The updated content.
    */
   updateContent(id: string, obj: Object): Promise<any> {
     return this.Model.findOneAndUpdate({
@@ -208,7 +206,7 @@ export default class ContentService {
   /**
    * Update multiple content models into the database.
    * @param {!Array<Object>} arr - The array of content to update.
-   * @returns {Promise<Array<Model>, Error>} - The updated content.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The updated content.
    */
   updateMany(arr: Array<Object>): Promise<Array<any>> {
     return this.createMany(arr)
@@ -217,7 +215,7 @@ export default class ContentService {
   /**
    * Delete a content model.
    * @param {!string} id - The id of the content to delete.
-   * @returns {Promise<Model, Error>} - The deleted content.
+   * @returns {Promise<MongooseModel, Error>} - The deleted content.
    */
   deleteContent(id: string): Promise<any> {
     return this.Model.findOneAndRemove({
@@ -228,7 +226,7 @@ export default class ContentService {
   /**
    * Delete multiple content models from the database.
    * @param {!Array<Object>} arr - The array of content to delete.
-   * @returns {Promise<Array<Model>, Error>} - The deleted content.
+   * @returns {Promise<Array<MongooseModel>, Error>} - The deleted content.
    */
   deleteMany(arr: Array<Object>): Promise<Array<any>> {
     return pMap(arr, obj => this.deleteContent(obj._id))
@@ -236,7 +234,7 @@ export default class ContentService {
 
   /**
    * Get random content.
-   * @returns {Promise<Model, Error>} - Random content.
+   * @returns {Promise<MongooseModel, Error>} - Random content.
    */
   getRandomContent(): Promise<any> {
     return this.Model.aggregate([{

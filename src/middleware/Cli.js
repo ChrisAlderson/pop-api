@@ -5,7 +5,7 @@
  * node.js command-line interfaces made easy
  * @external {Command} https://github.com/tj/commander.js
  */
-import command from 'commander'
+import Command from 'commander'
 
 /**
  * Class The class for the command line interface.
@@ -23,53 +23,71 @@ export default class Cli {
    * The command line parser to process the Cli inputs.
    * @type {Command}
    */
-  program: any
+  program: Object
 
   /**
    * Create a new Cli object.
    * @param {!PopApi} PopApi - The PopApi instance to bind the cli to.
-   * @param {!Ojbect} options - The options for the cli.
+   * @param {!Object} options - The options for the cli.
    * @param {?Array<string>} options.argv - The arguments to be parsed by
    * commander.
    * @param {!string} options.name - The name of the Cli program.
-   * @param {!string} [options.version] - The version of the Cli program.
+   * @param {!string} options.version - The version of the Cli program.
    */
   constructor(PopApi: any, {argv, name, version}: Object): void {
     /**
      * The command line parser to process the Cli inputs.
      * @type {Command}
      */
-    this.program = command
+    this.program = Command
     /**
      * The name of the Cli program.
      * @type {string}
      */
     this._name = name
 
-    // Setup the Cli program.
-    this.program
-      .version(`${this._name} v${version}`)
+    this.initOptions(version)
+    this.program.on('--help', this.printHelp.bind(this))
+
+    if (argv) {
+      this._run(PopApi, argv)
+    }
+  }
+
+  /**
+   * Initiate the options for the Cli.
+   * @param {!string} version - The version of the Cli program.
+   * @returns {undefined}
+   */
+  initOptions(version: string): void {
+    return this.program.version(`${this._name} v${version}`)
       .option(
         '-m, --mode <type>',
         'Run the API in a particular mode.',
         /^(pretty|quiet|ugly)$/i
       )
+  }
 
-    // Extra output on top of the default help output
-    this.program.on('--help', this.help)
-
-    this._run(argv, PopApi)
+  /**
+   * Get the help message.
+   * @returns {Array<string>} - The help message to print.
+   */
+  getHelp(): Array<string> {
+    return [
+      '',
+      '  Examples:',
+      '',
+      `    $ ${this._name} -m <pretty|quiet|ugly>`,
+      `    $ ${this._name} --mode <pretty|quiet|ugly>`
+    ]
   }
 
   /**
    * Method for displaying the --help option
    * @returns {undefined}
    */
-  help(): void {
-    console.info()
-    console.info('  Examples:\n')
-    console.info(`    $ ${this._name} -m <pretty|quiet|ugly>`)
-    console.info(`    $ ${this._name} --mode <pretty|quiet|ugly>\n`)
+  printHelp(): void {
+    console.info(`${this.getHelp().join('\n')}\n`)
   }
 
   /**
@@ -102,11 +120,11 @@ export default class Cli {
 
   /**
    * Run the Cli program.
-   * @param {?Array<string>} argv - The arguments to be parsed by commander.
    * @param {!PopApi} PopApi - The PopApi instance to bind the logger to.
+   * @param {?Array<string>} argv - The arguments to be parsed by commander.
    * @returns {undefined}
    */
-  _run(argv, PopApi): void {
+  _run(PopApi: any, argv?: Array<string>): void {
     if (argv) {
       this.program.parse(argv)
     }

@@ -3,8 +3,10 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai'
 
-import ContentService from '../../src/controllers/ContentService'
-import Database from '../../src/middleware/Database'
+import {
+  ContentService,
+  Database
+} from '../../src'
 import {
   ExampleModel,
   exampleModel1,
@@ -33,7 +35,7 @@ describe('ContentService', () => {
   before(done => {
     contentService = new ContentService({
       Model: ExampleModel,
-      itemType: 'example',
+      basePath: 'example',
       projection: {
         name: 1
       },
@@ -43,7 +45,7 @@ describe('ContentService', () => {
     database = new Database({}, {
       database: name
     })
-    database.connectMongoDb()
+    database.connect()
       .then(() => done())
       .catch(done)
   })
@@ -60,8 +62,8 @@ describe('ContentService', () => {
     expect(contentService.query).to.deep.equal({})
     expect(contentService.pageSize).to.a('number')
     expect(contentService.pageSize).to.equal(25)
-    expect(contentService.itemType).to.a('string')
-    expect(contentService.itemType).to.equal('example')
+    expect(contentService.basePath).to.a('string')
+    expect(contentService.basePath).to.equal('example')
   })
 
   /** @test {ContentService#getPage} */
@@ -187,7 +189,7 @@ describe('ContentService', () => {
    * @type {Function}
    */
   after(done => {
-    database.disconnectMongoDb()
+    database.disconnect()
       .then(() => done())
       .catch(done)
   })

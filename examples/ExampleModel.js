@@ -1,4 +1,5 @@
 // Import the necessary modules.
+// @flow
 import mongoose, {
   Model,
   Schema
@@ -8,7 +9,6 @@ import mongoose, {
  * An example ES6 class for the example schema.
  * @extends {Model}
  * @type {ExampleModel}
- * @flow
  */
 class ExampleModel extends Model {
 
@@ -77,6 +77,8 @@ const exampleSchema = new Schema({
     type: String,
     required: true
   }
+}, {
+  collection: 'examples'
 })
 
 // Attach the class to the schema.
@@ -86,4 +88,4 @@ exampleSchema.loadClass(ExampleModel)
  * Export the model
  * @type {ExampleModel}
  */
-export default mongoose.model(ExampleModel, exampleSchema, 'example')
+export default mongoose.model(ExampleModel, exampleSchema)

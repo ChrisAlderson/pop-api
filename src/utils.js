@@ -10,9 +10,9 @@ import { spawn } from 'child_process'
  * @param {!string} path - The path to the directory to create.
  * @returns {Promise<string, Error>} - The path to the created directory.
  */
-export function createTemp(path: string): Promise<string | Error> {
+export async function createTemp(path: string): Promise<string | Error> {
   if (existsSync(path)) {
-    return del(`${path}/**`).then(([ res ]) => res)
+    await del([`${path}/**`]).then(([ res ]) => res)
   }
 
   return new Promise(resolve => {
@@ -34,6 +34,7 @@ export function executeCommand(
   return new Promise((resolve, reject) => {
     const res = spawn(cmd, args)
 
+    res.stdout.on('data', data => resolve(data.toString()))
     res.on('error', reject)
     res.on('close', code => {
       if (code === 0) {

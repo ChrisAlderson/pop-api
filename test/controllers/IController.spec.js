@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai'
 
-import IController from '../../src/controllers/IController'
+import { IController } from '../../src'
 
 /** @test {IController} */
 describe('IController', () => {
