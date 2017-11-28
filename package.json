@@ -43,6 +43,7 @@
     "mocha": "^4.0.1",
     "nyc": "^11.4.0",
     "sinon": "^4.1.2",
+    "standard-version": "^4.2.0",
     "supertest": "^3.0.0"
   },
   "license": "MIT",
@@ -54,7 +55,9 @@
     "docs": "./node_modules/.bin/esdoc -c .esdoc.json",
     "flow": "./node_modules/.bin/flow",
     "lint": "./node_modules/.bin/eslint {example,src,test}/** *.js$",
+    "release": "./node_modules/.bin/standard-version",
     "precommit": "npm run lint && npm run flow",
+    "prerelease": "npm run build",
     "prepush": "npm run test",
     "test": "./node_modules/.bin/cross-env NODE_ENV=test ./node_modules/.bin/nyc --reporter=lcov --reporter=text ./node_modules/.bin/mocha --recursive --exit --reporter spec test/**"
   },
